@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>노래방 인기차트 검색</title>
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Pretendard", "나눔스퀘어", "맑은 고딕", "Malgun Gothic", Arial, sans-serif;
+    margin: 0;
+    padding: 56px 20px;
+    background-color: #ffffff;
+    color: #1f2937;
+}
+
+.container {
+    max-width: 780px;
+    margin: 0 auto;
+}
+
+.eyebrow {
+    text-align: center;
+    font-size: 13px;
+    color: #4f46e5;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    font-family: Consolas, monospace;
+}
+
+h1 {
+    font-size: 34px;
+    font-weight: 800;
+    margin: 0 0 14px 0;
+    text-align: center;
+    letter-spacing: -0.8px;
+}
+
+.stats {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 32px;
+}
+
+.stat-chip {
+    background-color: #f5f5ff;
+    border: 1px solid #e0e0f8;
+    color: #4f46e5;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 999px;
+}
+
+.search-card {
+    background-color: #f5f5ff;
+    border: 1px solid #e0e0f8;
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 28px;
+    box-shadow: 0 8px 24px rgba(79, 70, 229, 0.06);
+}
+
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+input[type="text"] {
+    padding: 12px 16px;
+    font-size: 15px;
+    width: 280px;
+    border: 1px solid #d9d9dd;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+select {
+    padding: 12px 14px;
+    font-size: 15px;
+    border: 1px solid #d9d9dd;
+    border-radius: 10px;
+    background-color: #ffffff;
+}
+
+button {
+    padding: 12px 22px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 10px;
+    border: 1px solid #d9d9dd;
+    background-color: #ffffff;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button[type="submit"] {
+    background-color: #4f46e5;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 6px 16px rgba(79, 70, 229, 0.28);
+}
+
+.chart-buttons {
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.btn-tj, .btn-ky {
+    background-color: #ffffff;
+    border: 1px solid #4f46e5;
+    color: #4f46e5;
+    font-size: 14px;
+}
+
+.results-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(31, 41, 55, 0.05);
+}
+
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.results-count {
+    font-size: 14.5px;
+    color: #6b7280;
+    font-weight: 600;
+}
+
+.download-link {
+    font-size: 13.5px;
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.download-link:hover {
+    text-decoration: underline;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 12px 16px;
+    font-size: 14.5px;
+    text-align: left;
+    border-bottom: 1px solid #eeeeee;
+}
+
+th {
+    background-color: #f5f5ff;
+    color: #4f46e5;
+    font-size: 12px;
+    letter-spacing: 0.6px;
+    font-weight: 700;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: #fafaff;
+}
+
+.songnum {
+    font-weight: 700;
+    color: #4f46e5;
+}
+
+.badge {
+    display: inline-block;
+    background-color: #eef0ff;
+    color: #4f46e5;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+
+.empty {
+    color: #93939f;
+    text-align: center;
+    padding: 28px 0;
+    font-size: 14.5px;
+}
+
+.intro {
+    color: #93939f;
+    text-align: center;
+    padding: 24px 0;
+    font-size: 15px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<p class="eyebrow">TJ · KYSING</p>
+<h1>노래방 인기차트 검색</h1>
+
+<div class="stats">
+    <span class="stat-chip">TJ {{ tj_count }}곡</span>
+    <span class="stat-chip">금영 {{ ky_count }}곡</span>
+</div>
+
+<div class="search-card">
+<form method="get" action="/">
+    <input type="text" name="keyword" value="{{ keyword }}" placeholder="가수 또는 노래 제목">
+    <select name="brand">
+        <option value="전체" {% if brand == "전체" %}selected{% endif %}>전체</option>
+        <option value="TJ" {% if brand == "TJ" %}selected{% endif %}>TJ</option>
+        <option value="금영" {% if brand == "금영" %}selected{% endif %}>금영</option>
+    </select>
+    <button type="submit">검색</button>
+</form>
+
+<div class="chart-buttons">
+    <a href="/?chart=TJ"><button type="button" class="btn-tj">TJ 인기차트 보기</button></a>
+    <a href="/?chart=금영"><button type="button" class="btn-ky">금영 인기차트 보기</button></a>
+</div>
+</div>
+
+{% if show_results %}
+<div class="results-card">
+    <div class="results-header">
+        <span class="results-count">검색결과 {{ total }}곡</span>
+        <a class="download-link" href="/download?keyword={{ keyword }}&brand={{ brand }}&chart={{ chart }}">CSV로 다운받기</a>
+    </div>
+
+    {% if songs|length > 0 %}
+    <table>
+    <tr>
+        <th>순위</th>
+        <th>곡번호</th>
+        <th>제목</th>
+        <th>가수</th>
+        <th>브랜드</th>
+    </tr>
+    {% for s in songs %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td class="songnum">{{ s["곡번호"] }}</td>
+        <td>{{ s["제목"] }}</td>
+        <td>{{ s["가수"] }}</td>
+        <td><span class="badge">{{ s["브랜드"] }}</span></td>
+    </tr>
+    {% endfor %}
+    </table>
+    {% else %}
+    <p class="empty">검색 결과가 없습니다.</p>
+    {% endif %}
+</div>
+{% else %}
+<p class="intro">가수나 노래 제목을 검색하거나, 위에서 차트 버튼을 눌러보세요.</p>
+{% endif %}
+
+</div>
+
+</body>
+</html>

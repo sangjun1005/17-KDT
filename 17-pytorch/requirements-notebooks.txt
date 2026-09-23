@@ -1,0 +1,56 @@
+# 1.ipynb ~ 7.ipynb 에서 실제로 import 하는 패키지만 모은 목록입니다.
+# 버전은 현재 .venv 에 설치되어 동작이 확인된 것과 동일하게 고정했습니다.
+# (requirements-windows.txt 는 책 전체(비전/서빙 포함)용이고, 이 파일은 지금 노트북 전용입니다.)
+#
+# 설치 (Windows + RTX 50 시리즈 + Python 3.11):
+#   uv venv --python 3.11 .venv
+#   uv pip install --python .venv\Scripts\python.exe torch==2.7.1 --index-url https://download.pytorch.org/whl/cu128
+#   uv pip install --python .venv\Scripts\python.exe -r requirements-notebooks.txt
+#
+# 주의:
+#   - konlpy 는 JDK(자바) 설치 + JAVA_HOME 설정이 따로 필요합니다.
+#   - nltk 데이터(punkt, punkt_tab, averaged_perceptron_tagger[_eng], wordnet, omw-1.4)는
+#     노트북 안의 nltk.download(...) 셀에서 받습니다.
+#   - 7.ipynb 는 진짜 torchtext 대신 이 저장소의 torchtext_compat/ 을 씁니다.
+#     따라서 torchtext 는 여기 넣지 않습니다(torch 2.7 에서 import 불가).
+#     진짜 torchtext 가 필요하면 requirements-torchtext.txt / .venv-torchtext 를 쓰세요.
+
+# --- 파이토치 (위 --index-url cu128 명령으로 먼저 설치) ---  1~7.ipynb
+torch==2.7.1
+
+# --- 수치/데이터 ---  1,4,5,6,7.ipynb
+numpy==1.26.4
+pandas==2.2.2
+scipy==1.13.1          # gensim 4.3.3 은 scipy<1.14 필요
+scikit-learn==1.5.2    # 4.ipynb: sklearn.manifold TSNE 등
+matplotlib==3.9.2      # 7.ipynb: 어텐션/손실 시각화
+tabulate==0.10.0       # 1.ipynb: !pip install tabulate
+
+# --- 한국어 전처리 ---  3,4,5,6.ipynb
+konlpy==0.6.0          # Okt/Kkma 등 (JDK 필요)
+JPype1==1.7.1          # konlpy 가 내부적으로 사용하는 JVM 브리지
+Korpora==0.2.0         # nsmc / korean_petitions / kornli 코퍼스
+jamo==0.4.1            # 3.ipynb: 한글 자모 분해
+
+# --- 토크나이저 / 임베딩 ---  2,3,4,5,6.ipynb
+nltk==3.9.1
+sentencepiece==0.2.0   # 3.ipynb: SentencePieceTrainer
+tokenizers==0.19.1     # 3.ipynb: WordPiece 학습
+gensim==4.3.3          # 4,5,6.ipynb: Word2Vec / FastText
+spacy==3.7.5           # 3.ipynb: en_core_web_sm, 7.ipynb: torchtext_compat 토크나이저
+click==8.5.0           # spacy CLI 가 요구하지만 의존성에 빠져 있어 명시
+
+# spaCy 모델 (7.ipynb Multi30k 독→영 번역 + 3.ipynb 영어 토크나이징)
+de_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.7.0/de_core_news_sm-3.7.0-py3-none-any.whl
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+
+# --- 데이터 증강 ---  2.ipynb
+nlpaug==1.1.11
+transformers==4.44.2   # nlpaug ContextualWordEmbsAug / BackTranslationAug
+sacremoses==0.1.1      # 역번역(Marian MT) 토크나이저
+tqdm==4.70.1
+
+# --- 노트북 실행 환경 ---
+jupyter==1.1.1
+ipykernel==7.3.0
+ipywidgets==8.1.9

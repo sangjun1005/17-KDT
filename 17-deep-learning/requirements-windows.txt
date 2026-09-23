@@ -1,0 +1,62 @@
+# 딥러닝의 정석 with 파이토치 - 실습 환경 (Windows / Python 3.10)
+#
+# torch / torchvision / torchaudio 는 NVIDIA GPU(CUDA) 빌드를 쓰기 위해
+# 이 파일에 넣지 않고 setup_env.ps1 에서 별도로 설치합니다.
+#   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130
+#
+# gym==0.25.2 는 setup.py 기반 legacy 빌드라서 최신 setuptools(>=67)에서
+# 빌드가 깨집니다. setup_env.ps1 이 설치 전에 setuptools==65.5.0, wheel==0.38.4
+# 로 먼저 고정합니다.
+#
+# numpy는 1.x로 고정합니다.
+#   - gym 0.26.2 가 np.bool8 을 사용 (numpy 2.0 에서 제거됨)
+#   - tensorflow 2.16.x 가 numpy<2 를 요구
+numpy==1.26.4
+
+# --- 핵심 프레임워크 (torch 계열은 setup_env.ps1에서 CUDA 빌드로 별도 설치) ---
+torchsummary
+
+# --- 데이터 / 시각화 ---
+matplotlib
+seaborn
+pandas
+scikit-learn
+scikit-optimize
+yfinance
+
+# --- 영상 처리 (8장, 5장) ---
+pillow
+opencv-python
+
+# --- 오디오 처리 (10장) ---
+librosa
+soundfile
+
+# --- 사전학습 모델 (7장, 9장, 11장) ---
+transformers
+timm
+
+# --- 모델 배포 / 최적화 (12장) ---
+# onnx 1.18+ 는 ml_dtypes>=0.5 를 요구하는데,
+# tensorflow 2.16.2 가 ml_dtypes~=0.3.1 로 고정하므로 충돌합니다.
+# onnx 1.17.0 은 ml_dtypes 에 의존하지 않아 두 패키지가 공존 가능합니다.
+onnx==1.17.0
+onnxruntime
+
+# --- 강화학습 (11장, CartPole-v1) ---
+# 노트북이 구(舊) Gym API 를 사용합니다:
+#   state = env.reset()                       -> 배열 반환 (0.26+ 는 튜플)
+#   next_state, reward, done, _ = env.step(a) -> 4-튜플 (0.26+ 는 5-튜플)
+# 0.25.2 가 이 API 의 마지막 버전이므로 고정합니다.
+gym==0.25.2
+pygame
+
+# --- 비교 예제용 (1장, 2장) ---
+# Windows에서 tensorflow>=2.11 은 CPU 전용입니다 (네이티브 GPU 지원 종료,
+# GPU가 필요하면 WSL2 안에서 설치해야 함). CartPole 실습 torch GPU와는 무관합니다.
+tensorflow==2.16.2
+
+# --- 노트북 실행 환경 ---
+jupyterlab
+ipykernel
+ipywidgets

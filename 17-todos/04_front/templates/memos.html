@@ -1,0 +1,184 @@
+{% extends "base.html" %} {% block contents %}
+<div
+  class="min-h-screen bg-gradient-to-br from-sky-50 via-white to-indigo-100 px-4 py-10"
+>
+  <div class="mx-auto flex max-w-6xl flex-col gap-8">
+    <div
+      class="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white/80 p-6 shadow-lg shadow-slate-200/60 backdrop-blur sm:flex-row sm:items-center sm:justify-between"
+    >
+      <div>
+        <p
+          class="mb-2 inline-flex rounded-full bg-sky-100 px-3 py-1 text-sm font-medium text-sky-700"
+        >
+          📝 내 메모
+        </p>
+        <h1 class="text-2xl font-semibold text-slate-900">
+          작성한 메모들을 한눈에 확인해보세요
+        </h1>
+        <p class="mt-2 text-sm text-slate-500">
+          새로 작성한 메모는 이곳에서 관리할 수 있습니다.
+        </p>
+      </div>
+      <button
+        class="rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+      >
+        새 메모 작성
+      </button>
+    </div>
+
+    {% if memos %}
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {% for memo in memos %}
+      <article
+        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition hover:-translate-y-0.5 hover:shadow-md"
+        data-id="{{ memo.id }}"
+      >
+        <div class="mb-3 flex items-start justify-between gap-3">
+          <h2 class="memo-title text-lg font-semibold text-slate-900">
+            {{ memo.title }}
+          </h2>
+          <span
+            class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600"
+          >
+            #{{ memo.id }}
+          </span>
+        </div>
+        <p
+          class="memo-content whitespace-pre-line text-sm leading-7 text-slate-600"
+        >
+          {{ memo.content }}
+        </p>
+        <div class="edit-form hidden mt-4 space-y-3">
+          <input
+            type="text"
+            class="memo-title-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+            value="{{ memo.title }}"
+          />
+          <textarea
+            class="memo-content-input w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+            rows="4"
+          >
+{{ memo.content }}</textarea
+          >
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              class="save-btn rounded-lg bg-slate-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+            >
+              완료
+            </button>
+            <button
+              type="button"
+              class="cancel-btn rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              취소
+            </button>
+          </div>
+        </div>
+        <div class="action-row mt-4 flex items-center gap-2">
+          <button
+            type="button"
+            class="edit-btn rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          >
+            수정
+          </button>
+          <button
+            type="button"
+            class="delete-btn rounded-lg border border-rose-200 px-3 py-2 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+            data-id="{{ memo.id }}"
+          >
+            삭제
+          </button>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div
+      class="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-10 text-center shadow-sm"
+    >
+      <p class="text-lg font-medium text-slate-700">
+        아직 작성한 메모가 없습니다.
+      </p>
+      <p class="mt-2 text-sm text-slate-500">첫 번째 메모를 작성해보세요.</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".delete-btn").forEach((button) => {
+    button.addEventListener("click", async function () {
+      const memoId = this.dataset.id;
+
+      const response = await fetch(`/memos/${memoId}`, {
+        method: "DELETE",
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        window.location.reload();
+      } else {
+        alert("메모 삭제에 실패했습니다.");
+      }
+    });
+  });
+
+  document.querySelectorAll(".edit-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const article = this.closest("article");
+      const titleEl = article.querySelector(".memo-title");
+      const contentEl = article.querySelector(".memo-content");
+      const editForm = article.querySelector(".edit-form");
+      const actionRow = article.querySelector(".action-row");
+
+      article.querySelector(".memo-title-input").value =
+        titleEl.textContent.trim();
+      article.querySelector(".memo-content-input").value =
+        contentEl.textContent.trim();
+
+      titleEl.classList.add("hidden");
+      contentEl.classList.add("hidden");
+      editForm.classList.remove("hidden");
+      actionRow.classList.add("hidden");
+    });
+  });
+
+  document.querySelectorAll(".cancel-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const article = this.closest("article");
+      const titleEl = article.querySelector(".memo-title");
+      const contentEl = article.querySelector(".memo-content");
+      const editForm = article.querySelector(".edit-form");
+      const actionRow = article.querySelector(".action-row");
+
+      titleEl.classList.remove("hidden");
+      contentEl.classList.remove("hidden");
+      editForm.classList.add("hidden");
+      actionRow.classList.remove("hidden");
+    });
+  });
+
+  document.querySelectorAll(".save-btn").forEach((button) => {
+    button.addEventListener("click", async function () {
+      const article = this.closest("article");
+      const memoId = article.dataset.id;
+      const title = article.querySelector(".memo-title-input").value;
+      const content = article.querySelector(".memo-content-input").value;
+
+      const response = await fetch(`/memos/${memoId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title, content }),
+      });
+
+      if (response.status >= 200 && response.status < 300) {
+        window.location.reload();
+      } else {
+        alert("메모 수정에 실패했습니다.");
+      }
+    });
+  });
+</script>
+{% endblock %}

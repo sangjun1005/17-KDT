@@ -1,0 +1,45 @@
+# 직접 설치한 핵심 패키지 목록 (책 readme 권장 버전 기준, Python 3.10)
+# 정확히 동일한 환경을 재현하려면 requirements-freeze.txt 사용
+
+# 책에서 명시한 버전
+tensorflow==2.15.0
+pillow==9.4.0
+opencv-python==4.8.0.76
+tensorflow-hub==0.16.1
+
+# TF 2.15와 호환되는 버전으로 고정 (최신 버전 설치 시 충돌 발생)
+tensorflow-probability==0.23.0
+tensorflow-datasets==4.9.4
+tensorflow-metadata==1.14.0
+setuptools<81  # tensorflow-hub가 의존하는 pkg_resources 유지용
+
+# 공용 데이터 처리/시각화
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+scikit-image
+tqdm
+imageio
+xmltodict
+
+# Jupyter
+jupyterlab
+notebook
+ipykernel
+
+# 6.2장 dlib 기반 얼굴 검출용 (brew install cmake 필요)
+dlib
+
+# 5.2장 (SAM 기반 객체탐지) - PyTorch 별도 스택
+torch
+torchvision
+git+https://github.com/facebookresearch/segment-anything.git
+jupyter_bbox_widget
+dataclasses-json
+supervision
+git+https://github.com/tensorflow/examples.git
+
+# Colab 전용 API(google.colab) 로컬 대체 shim
+-e ./tools/colab_shim

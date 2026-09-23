@@ -1,0 +1,88 @@
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>투두리스트</title>
+  </head>
+  <body
+    class="min-h-screen bg-slate-50 text-slate-800"
+    style="font-family: &quot;Noto Sans KR&quot;, sans-serif"
+  >
+    <nav class="border-b border-slate-200 bg-white/80 backdrop-blur">
+      <div
+        class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8"
+      >
+        <a href="/" class="text-lg font-semibold tracking-tight text-slate-900">
+          TodoList
+        </a>
+
+        <div class="flex items-center gap-2 text-sm font-medium">
+          <a
+            href="/write"
+            class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            글쓰기
+          </a>
+          <a
+            href="/memos"
+            class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            메모
+          </a>
+
+          {% if request.session.get("username") %}
+          <a
+            href="/signup"
+            class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            {{ request.session.get("username") }}님 환영합니다.
+          </a>
+          <form action="/logout" method="post" class="inline">
+            <button
+              type="submit"
+              class="rounded-lg bg-slate-900 px-3 py-2 text-white transition hover:bg-slate-800"
+            >
+              로그아웃
+            </button>
+          </form>
+          {% else %}
+          <a
+            href="/signup"
+            class="rounded-lg px-3 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+          >
+            회원가입
+          </a>
+          <a
+            href="/login"
+            class="rounded-lg bg-slate-900 px-3 py-2 text-white transition hover:bg-slate-800"
+          >
+            로그인
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    {% block contents %}{% endblock %}
+
+    <footer class="border-t border-slate-200 bg-white/80 py-6 backdrop-blur">
+      <div
+        class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 text-sm text-slate-500 sm:flex-row sm:px-6 lg:px-8"
+      >
+        <p>© 2026 TodoList. All rights reserved.</p>
+        <div class="flex items-center gap-4">
+          <a href="/memos" class="transition hover:text-slate-700">메모</a>
+          <a href="/signup" class="transition hover:text-slate-700">회원가입</a>
+          <a href="/login" class="transition hover:text-slate-700">로그인</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+# Add this when starting the guidebook's LSTM Autoencoder experiment.
+# Native Windows CPU setup, Python 3.12 (64-bit).
+-r requirements.txt
+tensorflow==2.20.0

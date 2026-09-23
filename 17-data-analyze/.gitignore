@@ -1,0 +1,17 @@
+.venv/
+
+ML/data/bike_test.csv
+ML/data/bike_train.csv
+ML/data/california.csv
+ML/data/creditcard.csv
+ML/data/diabetes.csv
+ML/data/house_test.csv
+ML/data/house_train.csv
+ML/data/human_activity_test.csv
+ML/data/human_activity_train.csv
+ML/data/Online_Retail.xlsx
+ML/data/pca_credit_card.xls
+ML/data/santander_test.csv
+ML/data/santander_train.csv
+ML/data/test.csv
+ML/data/train.csv

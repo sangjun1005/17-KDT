@@ -1,0 +1,83 @@
+# --- 비밀정보 ---
+.env
+.env.*
+*.ppk
+*.pem
+*.key
+
+# --- 가상환경 / 캐시 / IDE ---
+.venv/
+venv/
+.venv-notebooks/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.claude/
+*.log
+
+# --- 모델 가중치 ---
+*.pt
+*.pth
+*.h5
+*.keras
+*.ckpt
+*.onnx
+*.weights
+*.model
+*.bundle
+/17-team4/disease/models/*.pkl
+/17-team4/disease/saved_models/*.pkl
+
+# --- 압축 파일 / 문서 / 폰트 ---
+*.zip
+*.tar
+*.gz
+*.tgz
+*.pdf
+*.pptx
+*.ttf
+Claude outputs/
+
+# --- 외부 저장소 / 설치 파일 ---
+/17-image/darknet/
+/17-image/models/
+/17-image/tools/protoc/
+/17-pytorch/.runtime/
+
+# --- 데이터셋 ---
+/17-2조/dataset-master/
+/17-2조/dataset2-master/
+/17-deep-learning/chest_xray/
+/17-deep-learning/cityscapes/
+/17-deep-learning/helmet/
+/17-deep-learning/data/
+/17-image/VOCtrainval_2007/
+/17-image/VOCtest_2007/
+/17-image/컴퓨터비전/
+/17-pytorch/dataset/corpus.txt
+/17-codebot/tiny_codes.txt
+/17-data-analyze/ML/data/creditcard.csv
+/17-data-analyze/ML/data/santander_*.csv
+/17-data-analyze/ML/data/human_activity_*.csv
+/17-data-analyze/ML/data/Online_Retail.xlsx
+/17-data-analyze/ML/data/pca_credit_card.xls
+/17-team4/Project/data/raw/국토교통부_전국 버스정류장 위치정보_20251031.csv
+
+# --- 받은 강의자료 ---
+/17-deep-learning/lecture/
+/17-machine_learning/*.html
+
+# --- 재생성되는 출력 이미지 ---
+/17-image/data/image_at_epoch_*.png
+/17-image/output.png
+/17-deep-learning/*_figure*.png
+/17-deep-learning/stock_prediction_result.png
+
+# --- 17-2조/_이전버전: 코드만 ---
+/17-2조/_이전버전/**
+!/17-2조/_이전버전/**/
+!/17-2조/_이전버전/**/*.ipynb
+!/17-2조/_이전버전/**/*.py
+!/17-2조/_이전버전/**/*.md

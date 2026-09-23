@@ -1,0 +1,9 @@
+# Basic analysis and notebook kernel. Target: Python 3.12 (64-bit).
+# These are version ranges, not a lock file of an installed environment.
+numpy>=1.26,<2.3
+pandas>=2.2,<3
+openpyxl>=3.1.5,<4
+matplotlib>=3.9,<4
+seaborn>=0.13.2,<0.14
+scikit-learn>=1.5,<1.8
+ipykernel>=6.29,<7

@@ -1,0 +1,111 @@
+{% extends "base.html" %} {% block contents %}
+<div
+  class="min-h-screen bg-gradient-to-br from-sky-50 via-white to-indigo-100 px-4 py-12 flex items-center justify-center"
+>
+  <div
+    class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/70"
+  >
+    <div class="mb-8 text-center">
+      <p
+        class="mb-2 inline-flex rounded-full bg-sky-100 px-3 py-1 text-sm font-medium text-sky-700"
+      >
+        🔐 로그인
+      </p>
+      <h1 class="text-2xl font-semibold text-slate-900">
+        다시 만나서 반가워요
+      </h1>
+      <p class="mt-2 text-sm text-slate-500">
+        투두리스트를 이어서 관리해보세요.
+      </p>
+    </div>
+
+    <form id="login-form" class="space-y-4">
+      <div>
+        <label
+          for="username"
+          class="mb-1 block text-sm font-medium text-slate-700"
+          >사용자명</label
+        >
+        <input
+          id="username"
+          name="username"
+          type="text"
+          placeholder="사용자명을 입력하세요"
+          class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+          required
+        />
+      </div>
+
+      <div>
+        <label
+          for="password"
+          class="mb-1 block text-sm font-medium text-slate-700"
+          >비밀번호</label
+        >
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="비밀번호를 입력하세요"
+          class="w-full rounded-lg border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-100"
+          required
+        />
+      </div>
+
+      <div class="flex items-center justify-between text-sm text-slate-500">
+        <label class="flex items-center gap-2">
+          <input
+            type="checkbox"
+            class="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+          />
+          <span>로그인 상태 유지</span>
+        </label>
+        <a href="#" class="font-medium text-sky-600 hover:text-sky-700"
+          >비밀번호 찾기</a
+        >
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-lg bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+      >
+        로그인
+      </button>
+    </form>
+
+    <script>
+      document
+        .getElementById("login-form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const payload = {
+            username: document.getElementById("username").value,
+            password: document.getElementById("password").value,
+          };
+
+          const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (response.ok) {
+            window.location.href = "/memos";
+          } else {
+            alert("로그인에 실패했습니다.");
+          }
+        });
+    </script>
+
+    <p class="mt-6 text-center text-sm text-slate-500">
+      아직 계정이 없으신가요?
+      <a href="#" class="font-medium text-sky-600 hover:text-sky-700"
+        >회원가입</a
+      >
+    </p>
+  </div>
+</div>
+{% endblock %}

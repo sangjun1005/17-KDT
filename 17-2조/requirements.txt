@@ -1,0 +1,14 @@
+# Tested with Python 3.12
+# PyTorch GPU support depends on the installed NVIDIA driver/CUDA environment.
+
+numpy==1.26.4
+pandas==3.0.5
+matplotlib==3.11.1
+scikit-learn==1.9.0
+Pillow==12.3.0
+
+torch==2.13.0
+torchvision==0.28.0
+
+jupyterlab==4.6.3
+ipykernel==7.3.0
