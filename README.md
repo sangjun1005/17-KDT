@@ -66,7 +66,7 @@ KDT 17기 과정에서 실습한 노트북과 프로젝트를 한 저장소로 �
 | 17-data-analyze | Online Retail | `17-data-analyze/ML/data/Online_Retail.xlsx` | [UCI Online Retail](https://archive.ics.uci.edu/dataset/352/online+retail) |
 | 17-data-analyze | Default of Credit Card Clients | `17-data-analyze/ML/data/pca_credit_card.xls` | [UCI](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients) |
 | 17-pytorch | 국민청원 말뭉치 (`corpus.txt`) | `17-pytorch/dataset/corpus.txt` | `02.ipynb`에서 Korpora `korean_petitions`로 받아 자동 생성 |
-| 17-codebot | `tiny_codes.txt` (파이썬 코드 예제 말뭉치) | `17-codebot/tiny_codes.txt` | 외부 공개 데이터셋 (출처 확인 필요) |
+| 17-codebot | `tiny_codes.txt` (파이썬 코드 예제 말뭉치) | `17-codebot/tiny_codes.txt` | [Hugging Face: flytech/python-codes-25k](https://huggingface.co/datasets/flytech/python-codes-25k) (MIT) — `output` 열에서 코드블록 표시(`` ```python ``)를 지우고 샘플 사이를 `<\|endoftext\|>`로 이어 붙인 파일 |
 | 17-laser | 정밀가공 자원최적화 AI 데이터셋 | `17-laser/data/normal.xlsx`, `anomaly.xlsx` | [KAMP 인공지능 중소벤처 제조 플랫폼](https://www.kamp-ai.kr/) |
 | 17-team4 | 전국 버스정류장 위치정보 | `17-team4/Project/data/raw/` | [공공데이터포털](https://www.data.go.kr/) — "국토교통부_전국 버스정류장 위치정보" 검색 |
 | pro4_team3_최종 | 맞춤법 교정 말뭉치 2022 | 노트북의 `DATA_DIR` | [국립국어원 모두의 말뭉치](https://kli.korean.go.kr/corpus/main/requestMain.do) (이용 신청 필요) |
