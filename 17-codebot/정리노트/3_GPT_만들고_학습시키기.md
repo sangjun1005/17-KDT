@@ -614,7 +614,7 @@ Hello. What can I help you with?<|endoftext|>
 
 ```python
 def _create_sample(self, instruction, response):
-    prompt   = f"### Instruction:\n{instruction}\n\n### Response:\n"
+    prompt   = f"### Instruction\n{instruction}\n\n### Response:\n"   # 콜론이 없다
     response = f"{response}<|endoftext|>"
 
     prompt_ids   = self.tokenizer.encode(prompt)
@@ -666,6 +666,9 @@ model = GPT.load_from(pretrain_model_path, device=device)
 > **실제로 돌려 보고 생성 품질을 비교해 볼 일이다.**
 
 > **여기도 검증셋이 없다.** 1,092개 중 일부를 떼어 두면 과적합 시점을 볼 수 있다.
+>
+> **학습 프롬프트에 콜론이 빠져 있다.** `### Instruction`으로 학습하는데
+> 3-8의 `format_prompt`는 `### Instruction:`으로 묻는다. 3-9에 자세히 적었다.
 
 ---
 
@@ -746,7 +749,7 @@ while True:
 | 256~259 | 공백 2칸 · 공백 4칸 · `in` · 공백 3칸 |
 | 260~265 | `re` · `or` · ` =` · `st` · `te` · 줄바꿈+공백 |
 | 990~994 | `Error` · `' '` · `atter` · `St` · `thod` |
-| 995~999 | ` on` · `cle` · ` R` · `ery` · `<|endoftext|>` |
+| 995~999 | ` on` · `cle` · ` R` · `ery` · 특수 토큰 `endoftext` |
 
 **앞쪽이 전부 들여쓰기다.** 말뭉치가 파이썬 코드라서 가장 자주 붙어 나오는 쌍이 공백이었다.
 마지막 999번이 `<|endoftext|>`인 것도 설계대로다 — 특수 토큰은 병합 뒤에 마지막으로 붙인다.
