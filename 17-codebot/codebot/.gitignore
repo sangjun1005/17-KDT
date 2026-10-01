@@ -1,0 +1,10 @@
+.venv/
+.pip-cache/
+.npm-cache/
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.pyc
+*.log
+backend/data/
+.test-data/

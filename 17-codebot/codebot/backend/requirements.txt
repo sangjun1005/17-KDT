@@ -1,0 +1,8 @@
+fastapi==0.142.2
+uvicorn==0.54.0
+torch==2.11.0
+regex==2026.9.29
+tqdm==4.70.1
+PyJWT==2.15.1
+pwdlib[argon2]==0.3.1
+numpy>=1.24.0,<2.0.0

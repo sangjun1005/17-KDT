@@ -1,0 +1,12 @@
+# 대용량 학습 데이터 (ch04에서 생성)
+tiny_stories_train.txt
+tiny_stories_valid.txt
+tiny_stories_train.bin
+tiny_stories_valid.bin
+
+# 웹서비스 로컬 데이터·빌드 결과
+backend/data/
+frontend/node_modules/
+frontend/dist/
+__pycache__/
+*.log

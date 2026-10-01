@@ -1,0 +1,158 @@
+/* 네이버 메인 테마: 흰 배경, 네이버 초록 포인트, 회색 구분선 */
+:root {
+  --green: #03c75a;
+  --green-dark: #00a84b;
+  --green-soft: #eafaf1;
+  --page: #f5f6f7;
+  --card: #ffffff;
+  --line: #e3e5e8;
+  --text: #222222;
+  --sub: #767678;
+  --danger: #e5352b;
+  font-family: "Noto Sans KR", sans-serif;
+  color: var(--text);
+  background: var(--page);
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); }
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: .45; cursor: default; }
+:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* 상단 바 */
+.top-bar { background: var(--card); }
+.top-inner { max-width: 1140px; margin: auto; padding: 10px 20px; display: flex; justify-content: flex-end; align-items: center; gap: 14px; font-size: 12px; color: var(--sub); }
+.top-inner b { color: var(--text); }
+.top-link { border: 0; background: none; color: var(--sub); font-size: 12px; padding: 4px 0; }
+.top-link:hover:not(:disabled) { color: var(--text); text-decoration: underline; }
+
+/* 로고 + 검색창 (네이버 메인 검색 영역) */
+.hero { background: var(--card); border-bottom: 1px solid var(--line); padding: 34px 20px 30px; display: flex; flex-direction: column; align-items: center; }
+.brand { margin: 0 0 22px; display: flex; align-items: center; gap: 10px; font: 900 40px/1 "Noto Sans KR", sans-serif; letter-spacing: -1.5px; color: var(--green); }
+.brand-mark { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; background: var(--green); color: #fff; font-size: 30px; }
+.search-bar { width: min(720px, 100%); height: 64px; display: flex; border: 2px solid var(--green); border-radius: 33px; background: #fff; overflow: hidden; box-shadow: 0 2px 8px rgba(30, 30, 30, .08); }
+.search-bar input { flex: 1; min-width: 0; border: 0; padding: 0 28px; font-size: 18px; color: var(--text); background: transparent; }
+.search-bar input:focus-visible { outline: none; }
+.search-bar input::placeholder { color: #a8a8aa; }
+.search-bar input:disabled { background: #f7f8f9; }
+.search-button { display: flex; align-items: center; gap: 6px; border: 0; background: var(--green); color: #fff; font-weight: 700; font-size: 16px; padding: 0 26px; white-space: nowrap; }
+.search-button:hover:not(:disabled) { background: var(--green-dark); }
+.hero-help { margin: 14px 0 0; font-size: 13px; color: var(--sub); text-align: center; line-height: 1.7; }
+.char-count { margin-left: 8px; color: var(--green-dark); font-weight: 700; }
+
+/* 본문 2단 배치 */
+.portal { max-width: 1140px; margin: 24px auto 0; padding: 0 20px; display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 24px; align-items: start; }
+.main-column, .sidebar { min-width: 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+.card + .card { margin-top: 16px; }
+.card-heading { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.card-heading h2 { margin: 0; font-size: 16px; font-weight: 700; }
+.card-heading h2::before { content: ''; display: inline-block; width: 4px; height: 14px; background: var(--green); border-radius: 2px; margin-right: 8px; vertical-align: -1px; }
+.card-heading span { font-size: 12px; color: var(--sub); }
+.empty, .loading { text-align: center; color: var(--sub); padding: 32px 20px; margin: 0; font-size: 14px; }
+.empty b { color: var(--green-dark); }
+
+.locked { padding: 48px 24px; text-align: center; }
+.lock-icon { font-size: 38px; }
+.locked h2 { margin: 12px 0 8px; font-size: 20px; }
+.locked p { color: var(--sub); font-size: 14px; margin: 0 0 20px; line-height: 1.8; }
+
+/* 스토리 카드 */
+.story-card { padding: 20px; overflow-wrap: anywhere; }
+.records-card .story-card + .story-card { border-top: 1px solid var(--line); }
+.story-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12px; }
+.author-avatar, .large-avatar { display: inline-grid; place-items: center; border-radius: 50%; background: var(--green-soft); color: var(--green-dark); font-weight: 700; flex-shrink: 0; }
+.author-avatar { width: 26px; height: 26px; font-size: 12px; }
+.story-author { font-weight: 700; }
+.mine-badge { font-size: 11px; font-weight: 700; color: var(--green-dark); background: var(--green-soft); padding: 2px 7px; border-radius: 4px; }
+.story-meta time { margin-left: auto; color: #9a9a9c; font-size: 11px; }
+.story-card h3 { margin: 12px 0 8px; font-size: 17px; line-height: 1.6; }
+.story-content { margin: 0; white-space: pre-wrap; font-size: 15px; line-height: 1.9; color: #404040; }
+.prompt-part { color: var(--green-dark); font-weight: 700; }
+.story-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; gap: 12px; }
+.like-button, .edit-button, .delete-button { font-weight: 900; font-size: 14px; border-radius: 6px; padding: 7px 14px; background: #fff; }
+.like-button { border: 1px solid var(--line); color: var(--text); }
+.like-button span { font-size: 16px; margin-right: 3px; color: #b5b5b7; }
+.like-button.liked { border-color: var(--green); color: var(--green-dark); background: var(--green-soft); }
+.like-button.liked span { color: var(--green); }
+.owner-actions { display: flex; gap: 8px; }
+.edit-button { border: 1px solid var(--line); color: var(--text); }
+.edit-button:hover:not(:disabled) { border-color: var(--green); color: var(--green-dark); }
+.delete-button { border: 1px solid #f3c4c1; color: var(--danger); }
+.delete-button:hover:not(:disabled) { background: #fff3f2; }
+
+/* 페이지네이션 */
+.pagination { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px; padding: 16px; border-top: 1px solid var(--line); }
+.pagination button { min-width: 34px; height: 34px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--text); font-size: 13px; padding: 0 9px; }
+.pagination button:hover:not(:disabled) { border-color: var(--line); }
+.pagination button.current { background: var(--green); color: #fff; font-weight: 700; }
+.page-group { display: inline-flex; gap: 4px; align-items: center; }
+.ellipsis { color: var(--sub); }
+
+/* 우측 로그인 박스 (네이버 로그인 영역) */
+.account-card { padding: 20px; }
+.account-card > p { margin: 0 0 12px; font-size: 13px; color: var(--sub); line-height: 1.6; }
+.login-button { width: 100%; border: 0; border-radius: 8px; background: var(--green); color: #fff; font-size: 16px; font-weight: 700; padding: 15px; }
+.login-button b { font-weight: 900; margin-right: 5px; }
+.login-button:hover { background: var(--green-dark); }
+.account-intro { display: flex; align-items: center; gap: 12px; }
+.large-avatar { width: 50px; height: 50px; font-size: 20px; }
+.account-intro strong { font-size: 16px; }
+.account-intro p { margin: 3px 0 0; font-size: 12px; color: var(--sub); }
+.account-links { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 14px; color: #d0d0d2; font-size: 12px; }
+.text-button { border: 0; background: none; color: var(--sub); font-size: 13px; padding: 4px 0; }
+.text-button:hover:not(:disabled) { color: var(--text); text-decoration: underline; }
+.guide-card { padding: 18px 20px; }
+.guide-card h2 { margin: 0 0 10px; font-size: 15px; }
+.guide-card ol { margin: 0; padding-left: 18px; font-size: 13px; line-height: 2.2; color: var(--sub); }
+.guide-card b { color: var(--text); }
+
+/* 공통 버튼·알림 */
+.primary-button, .secondary-button, .danger-button { border-radius: 6px; padding: 10px 20px; font-size: 14px; font-weight: 700; border: 1px solid transparent; }
+.primary-button { background: var(--green); color: #fff; }
+.primary-button:hover:not(:disabled) { background: var(--green-dark); }
+.secondary-button { background: #fff; color: var(--text); border-color: var(--line); }
+.danger-button { background: var(--danger); color: #fff; font-weight: 900; }
+.error, .notice { margin: 0 0 16px; padding: 12px 16px; border-radius: 8px; font-size: 14px; line-height: 1.7; }
+.error { background: #fff3f2; border: 1px solid #f3c4c1; color: #c3281f; }
+.notice { background: var(--green-soft); border: 1px solid #bfeccf; color: #0a7a3c; }
+
+/* 대화상자 */
+.modal { width: min(460px, calc(100vw - 32px)); padding: 26px; border: 0; border-radius: 14px; background: #fff; color: var(--text); max-height: 90vh; box-shadow: 0 12px 40px rgba(0, 0, 0, .18); }
+.modal::backdrop { background: rgba(0, 0, 0, .4); }
+.modal-heading { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.modal-heading h2 { margin: 0; font-size: 20px; }
+.icon-button { border: 0; background: none; color: var(--sub); font-size: 26px; line-height: 1; }
+.form-stack { display: flex; flex-direction: column; gap: 14px; }
+.form-stack label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; }
+.form-stack input, .form-stack textarea { width: 100%; border: 1px solid #dadadc; border-radius: 6px; padding: 12px; background: #fff; color: var(--text); font-size: 14px; }
+.form-stack input:focus-visible, .form-stack textarea:focus-visible { outline: none; border-color: var(--green); }
+.form-stack textarea { line-height: 1.8; resize: vertical; }
+.form-stack input:disabled { background: #f5f6f7; }
+.form-stack .error { margin: 0; }
+.form-stack .primary-button { padding: 14px; font-size: 15px; }
+.form-help { margin: 0; text-align: center; font-size: 12px; color: var(--sub); }
+.form-stack .text-button { align-self: center; }
+.delete-description { font-size: 14px; line-height: 1.8; color: var(--sub); overflow-wrap: anywhere; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+
+.site-footer { max-width: 1140px; margin: 40px auto 0; padding: 22px 20px 32px; border-top: 1px solid var(--line); font-size: 12px; color: var(--sub); }
+.site-footer strong { color: var(--green); margin-right: 8px; }
+
+@media (max-width: 860px) {
+  .portal { grid-template-columns: 1fr; padding: 0 12px; margin-top: 16px; }
+  .sidebar { order: -1; }
+  .guide-card { display: none; }
+  .hero { padding: 24px 16px 22px; }
+  .brand { font-size: 32px; }
+  .brand-mark { width: 38px; height: 38px; font-size: 24px; }
+  .search-bar { height: 54px; }
+  .search-bar input { padding: 0 18px; font-size: 15px; }
+  .search-button { padding: 0 16px; font-size: 14px; }
+  .top-inner { padding: 10px 16px; }
+  .story-card { padding: 18px 16px; }
+  .story-meta time { width: 100%; margin-left: 34px; }
+}

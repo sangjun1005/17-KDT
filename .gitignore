@@ -88,3 +88,10 @@ Claude outputs/
 # 토큰화 결과: ch03 의 BPE 학습 + encode 로 재생성 가능
 /17-codebot/codebot/tiny_codes.bin
 # 모델 가중치는 위의 *.pt 규칙이 이미 잡는다
+
+# --- 17-vision_transformer (2026-10-01) ---
+/17-vision_transformer/datasets/
+/17-vision_transformer/.vscode/
+.venv-cuda/
+/17-vision_transformer/model/
+/17-vision_transformer/logs/
