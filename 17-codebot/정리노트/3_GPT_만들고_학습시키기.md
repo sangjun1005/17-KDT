@@ -708,7 +708,7 @@ while True:
 
 ---
 
-## 3-9. 실측 결과 — 2026-09-28 실행
+## 3-9. 실측 결과 — 2026-10-02 재실행
 
 노트북을 처음부터 끝까지 돌린 결과다. **아래 숫자는 전부 노트북 출력에서 그대로 가져왔다.**
 
@@ -718,7 +718,7 @@ while True:
 | --- | --- |
 | 장치 | `cuda` |
 | 토큰화 | 43,671묶음 · **4분 12초** (173.05 it/s) |
-| 사전학습 | 20,000회 · **40분 15초** (8.28 it/s) |
+| 사전학습 | 20,000회 · **40분 14초** (8.28 it/s) |
 | SFT | 500회 · **57초** (8.65 it/s) |
 | `model_pretrain.pt` | 44,516,353 바이트 |
 | `model_sft.pt` | 44,515,938 바이트 |
@@ -731,7 +731,7 @@ while True:
 | 지점 | 값 |
 | --- | --- |
 | 이론상 시작값 | `ln(1000)` = **6.9078** |
-| 사전학습 마지막 배치 | **0.6441** |
+| 사전학습 마지막 배치 | **0.6080** (첫 실행 0.6441) |
 | SFT 마지막 배치 | **읽을 수 없다** (아래 버그) |
 
 > **주의 — SFT 손실이 출력되지 않았다**
@@ -837,6 +837,350 @@ SFT 쪽은 축 라벨을 영어(`Iteration`, `loss`)로 써서 깨지지 않았�
 
 ---
 
+### 재실행으로 바뀐 것
+
+같은 노트북을 두 번 돌린 결과를 나란히 두면 **무엇이 재현되고 무엇이 안 되는지**가 보인다.
+
+| 항목 | 2026-09-28 | 2026-10-02 | 재현되나 |
+| --- | --- | --- | --- |
+| BPE 병합 규칙 | 743개 | 743개 | **같다** (결정적) |
+| 토큰 수 | 2,677,398 | 2,677,398 | **같다** (결정적) |
+| 파라미터 | 11,121,640 | 11,121,640 | **같다** (구조가 정한다) |
+| BPE 학습 시간 | — | 10분 43초 (1.15 it/s) | 기계 상태에 따라 다르다 |
+| 토큰화 시간 | 4분 12초 | 3분 29초 (208.17 it/s) | 다르다 |
+| 사전학습 시간 | 40분 15초 | 40분 14초 | 거의 같다 |
+| **사전학습 최종 손실** | **0.6441** | **0.6080** | **다르다** |
+| 생성 품질 | 문법만 맞음 | **돌아가는 함수가 나온다** | 다르다 |
+
+**토크나이저는 결정적이고 학습은 아니다.** BPE 는 같은 입력에 같은 규칙을 만들지만(동점 처리를 바이트 값으로 고정해 둔 덕이다 — 1장),
+학습은 `torch.randint` 로 뽑는 배치 순서와 드롭아웃이 매번 달라 **시드를 고정하지 않으면 손실이 다르게 끝난다.**
+
+> **시드를 고정하지 않았다.** `torch.manual_seed(...)` 가 어디에도 없다.
+> 두 실행의 손실 차이 0.036 이 "개선"인지 "운"인지 구분할 방법이 없다.
+> 설정을 비교하려면 시드를 박아 두고 여러 번 돌려야 한다 (5장의 `seed_offset` 참고).
+
+### 두 번째 실행의 생성 결과 — 눈에 띄게 좋아졌다
+
+`prompt="def"`, `temperature=1.0`, 5회 생성.
+
+```python
+# 0번 — 거의 맞는다
+def fibonacci_series(n):
+    f1 = 0
+    a = 1
+    b = 1
+    if (n < 0):
+        print("Incorrect input")
+    elif (n > 0):          # ← n == 0 이어야 한다
+        return 0
+    elif (n == 1):
+        return 1
+    else:
+        for i in range(2, n):
+            c = a + b
+            a = b
+            b = c
+        return b
+
+# 4번 — 그대로 돌아간다
+def reverse_sentence(sentence):
+    words = sentence.split(' ')
+    reversed_sentence = words[::-1]
+    reversed_sentence = ' '.join(reversed_sentence)
+    return reversed_sentence
+
+sentence = 'Hello world'
+reverse_sentence = reverse_sentence(sentence)
+print(reverse_sentence)
+```
+
+**0번은 피보나치 알고리즘이 실제로 맞다.** `a, b` 를 굴리는 루프와 `return b` 가 정확하다.
+틀린 곳은 `elif (n > 0): return 0` 한 줄 — `n == 0` 이어야 한다. **논리의 뼈대는 서고 조건 하나가 어긋났다.**
+
+**4번은 복사해 붙여도 돌아간다.** 다만 마지막 두 줄에서 **함수 이름을 결과로 덮어쓴다**(`reverse_sentence = reverse_sentence(...)`).
+한 번은 동작하고 두 번째 호출에서 `TypeError` 가 난다 — 모델이 흔히 내는 실수다.
+
+```python
+# 1번 — 이름과 동작이 다르다
+def capitalize(s):
+    s = s.lower()      # 대문자로 만드는 게 아니라 소문자로 만든다
+    return s
+
+# 2번 — 한 줄에서 끊겼다
+def
+
+# 3번 — 완전히 망가졌다
+def LargestCommonSubsequence(list1, list2):
+    ...
+    if list1[i + j] == list2[j] and is_anagram(...)   # 콜론 없음, 괄호 안 맞음
+    longest = tappend(list1[i + 1][j], list2[j - dp[i][j - 1])
+```
+
+**5개 중 2개가 쓸 만하고, 1개는 이름이 틀리고, 2개는 망가졌다.**
+첫 실행에서는 **쓸 만한 것이 하나도 없었다**(정의 안 된 변수, `temp >= temp` 같은 항상 참인 조건).
+같은 설정에서 이만큼 벌어지니, **생성 품질을 두 눈으로 비교하려면 샘플을 수십 개 봐야 한다.**
+
+### 챗봇 응답도 바뀌었다
+
+```
+You: Hello
+Bot: hex = 'hello'
+```
+
+첫 실행은 학습 데이터 1번 항목을 그대로 돌려줬다(`Hello. What can I help you with?`).
+이번에는 **코드로 답했다.** SFT 데이터가 1,092쌍뿐이고 사전학습 말뭉치는 코드 268만 토큰이라,
+**조금만 흔들려도 사전학습 쪽 성향이 튀어나온다.** 3-7에서 "SFT 학습률이 사전학습과 같다"고 지적한 것이 여기서 드러난다.
+
+---
+
+## 3-10. GRPO — 강화학습으로 덧셈을 가르친다
+
+SFT 는 "정답을 베껴 쓰게" 가르쳤고, 4장의 DPO 는 "둘 중 나은 쪽"을 가르쳤다.
+GRPO 는 **"직접 풀어 보고 맞으면 그 방향으로"** 가르친다.
+
+> **GRPO (Group Relative Policy Optimization)** 는 DeepSeek 이 쓴 기법이다.
+> PPO 에서 **가치망(critic)을 없애고**, 대신 같은 문제를 여러 번 풀어 **그 그룹의 평균을 기준선**으로 쓴다.
+
+### 과제 — 한 자리 수 덧셈
+
+```python
+class GRPODataset(Dataset):
+    def __init__(self, tokenizer):
+        self.data = []
+        for i in range(1, 10):
+            for j in range(1, 10):
+                prompt = f'### Instruction:\n{i}+{j}=\n\n### Response:\n'
+                ground_touch = i + j
+                self.data.append((prompt, ground_touch))
+```
+
+**9 × 9 = 81문제가 전부다.** 1+1 부터 9+9 까지.
+
+**왜 덧셈인가.** 강화학습에는 **맞았는지 기계적으로 판정할 수 있는 과제**가 필요하다.
+"이야기가 좋은가"는 사람이나 LLM 이 봐야 하지만(4장), 덧셈은 숫자만 비교하면 끝난다.
+
+```python
+def calculate_reward(ground_truth, response):
+    try:
+        matches = re.findall(r'(-?\d+)', response)
+        if matches:
+            predicted = int(matches[-1])
+            return 1.0 if predicted == ground_truth else 0.0
+        return 0.0
+    except:
+        return 0.0
+```
+
+**응답에서 마지막 숫자를 뽑아 정답과 비교한다.** 맞으면 1, 틀리면 0. 중간 과정은 보지 않는다.
+`matches[-1]` 로 **마지막** 숫자를 쓰는 것이 포인트다 — 모델이 `1+2= 3` 처럼 문제를 되풀이해도 답만 읽는다.
+
+### 그룹을 만들어 평균을 뺀다 — 이게 GRPO 의 핵심
+
+```python
+def generate_group(model, tokenizer, prompts, gts, group_size):
+    for prompt, gt in zip(prompts, gts):
+        responses = []
+        for _ in range(group_size):                      # 같은 문제를 8번 푼다
+            full_text = generate(model, tokenizer, prompt, temperature=1.0)
+            responses.append(full_text[len(prompt):])
+
+        rewards = torch.tensor([calculate_reward(gt, r) for r in responses])
+        advantages = rewards - rewards.mean()            # ← 그룹 평균이 기준선
+```
+
+```
+3+5= 를 8번 풀어 본다
+응답:      8      7      8      8      3      8      8      9
+보상:      1      0      1      1      0      1      1      0
+평균:                        0.625
+이득:  +0.375 -0.625 +0.375 +0.375 -0.625 +0.375 +0.375 -0.625
+        ↑ 더 자주 하게          ↑ 덜 하게
+```
+
+**`rewards - rewards.mean()` 이 한 줄이 가치망을 대체한다.**
+
+| | PPO | **GRPO** |
+| --- | --- | --- |
+| 기준선 | **가치망**(critic)이 "이 상태의 기대 보상"을 예측 | **같은 문제 8번의 평균** |
+| 필요한 모델 | 정책 + 가치망 + 참조 | **정책 + 이전 정책** |
+| 추가 학습 | 가치망도 같이 학습해야 한다 | 없다 |
+| 비용 | 모델 하나 더 | **생성 8배** |
+
+**"기준선"이 왜 필요한가.** 보상만 보고 밀면 **모든 응답의 확률이 다 올라간다**(보상이 전부 양수니까).
+평균을 빼면 **평균보다 잘한 것만** 올라가고 못한 것은 내려간다. 이게 **상대 비교**다.
+8개가 전부 맞거나 전부 틀리면 이득이 모두 0이 되어 **그 문제에서는 아무것도 배우지 않는다** — 자연스러운 커리큘럼이 생긴다.
+
+### 클리핑 — PPO 에서 가져온 안전장치
+
+```python
+def compute_probs(model, ids):
+    logits = model(ids)
+    probs = F.softmax(logits[:, :-1, :], dim=-1)
+    labels = ids[:, 1:]
+    token_probs = torch.gather(probs, dim=-1, index=labels.unsqueeze(-1)).squeeze(-1)
+    return token_probs
+
+def grpo_loss(model, old_model, ids, mask, advantages, epsilon=0.2):
+    probs = compute_probs(model, ids)
+    with torch.no_grad():
+        old_probs = compute_probs(old_model, ids)
+
+    ratio = probs / (old_probs + 1e-8)
+    advantages = advantages.unsqueeze(-1)
+    unclipped = ratio * advantages
+    clipped = torch.clamp(ratio, 1 - epsilon, 1 + epsilon) * advantages
+    mask = mask[:, 1:]
+    token_objective = torch.min(unclipped, clipped) * mask
+    return -token_objective.sum() / ids.size(0)
+```
+
+**`ratio` 는 "지금 모델이 이 토큰을 예전보다 몇 배 더 좋아하는가"다.**
+
+```
+ratio = 1.0   → 안 바뀌었다
+ratio = 1.5   → 1.5배 더 좋아하게 됐다
+ratio = 0.5   → 절반으로 줄었다
+```
+
+`torch.clamp(ratio, 0.8, 1.2)` 로 **한 번에 ±20% 이상 못 움직이게 묶는다.**
+`torch.min(unclipped, clipped)` 은 **둘 중 작은 쪽**을 고른다 — 이득이 양수든 음수든 **보수적인 쪽**으로 간다.
+
+**왜 묶는가.** 강화학습은 자기가 만든 데이터로 자기를 학습시킨다. 한 번에 크게 움직이면
+다음 생성이 망가지고, 망가진 생성으로 또 학습해 **되돌릴 수 없게 무너진다**(policy collapse).
+
+```python
+mask = mask[:, 1:]
+token_objective = torch.min(unclipped, clipped) * mask
+```
+
+**마스크가 또 나온다.** 3-7의 `-100`, 4장 DPO 의 0/1 마스크와 같은 역할이다 —
+**프롬프트 부분은 점수에 넣지 않는다.** 모델이 만든 응답 토큰만 센다.
+
+**`-...sum() / n_samples`** — 목적함수를 **최대화**해야 하므로 손실로 쓸 때 부호를 뒤집는다.
+
+### 학습 루프
+
+```python
+learning_rate = 7e-6
+max_iters = 100
+n_update_per_generation = 2
+epsilon = 0.2
+group_size = 8
+batch_size = 32
+eval_interval = 10
+
+model = GPT.load_from(sft_model_path, device=device)        # SFT 모델에서 출발
+old_model = GPT.load_from(sft_model_path, device=device)
+old_model.eval()
+```
+
+```python
+for i in pbar:
+    prompts, gts = next(data_iter)
+    old_model.load_state_dict(model.state_dict())           # ① 사본을 떠 둔다
+    all_prompts, all_responses, all_advantages = generate_group(
+        old_model, tokenizer, prompts, gts, group_size)      # ② 사본으로 생성
+
+    ids, mask = dataset.get_batch(all_prompts, all_responses, device)
+
+    for _ in range(n_update_per_generation):                 # ③ 같은 데이터로 2번 갱신
+        optimizer.zero_grad()
+        loss = grpo_loss(model, old_model, ids, mask, all_advantages, epsilon)
+        loss.backward()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+        optimizer.step()
+```
+
+**세 단계가 강화학습의 모양을 그대로 보여 준다.**
+
+| 단계 | 하는 일 | 왜 |
+| --- | --- | --- |
+| ① `old_model.load_state_dict(...)` | 매 반복마다 현재 모델을 복사 | `ratio` 의 기준이 **방금 전 모델**이어야 한다 |
+| ② `generate_group(old_model, ...)` | **사본으로** 생성 | 학습 중인 모델로 생성하면 기준이 흔들린다 |
+| ③ 같은 데이터로 2번 갱신 | 생성이 비싸니 재활용 | 그래서 클리핑이 필요하다 |
+
+**생성이 병목이다.** 한 반복에 `batch_size 32 × group_size 8 = 256`번 생성한다.
+그래서 100회에 **4분 55초**(2.96 s/it)가 걸렸다 — 사전학습은 8.28 it/s 였다. **25배 느리다.**
+
+`learning_rate = 7e-6` 은 사전학습(`3e-4`)의 **1/43** 이다. SFT 가 낮추지 않았던 학습률을 여기서는 제대로 낮췄다.
+
+### 평가 — 81문제 전부를 `temperature=0` 으로
+
+```python
+if i % eval_interval == 0:
+    model.eval()
+    correct, total = 0, 0
+    with torch.no_grad():
+        for prompt, gt in dataset.data:
+            response = generate(model, tokenizer, prompt, temperature=0)
+            correct += calculate_reward(gt, response) > 0
+            total += 1
+    model.train()
+    current_accuracy = correct / total * 100
+```
+
+**학습은 `temperature=1.0`, 평가는 `temperature=0`.**
+학습에는 다양한 시도가 필요하고(안 그러면 탐색이 안 된다), 평가는 **재현 가능한 한 가지 답**이어야 한다.
+`temperature=0` 은 `argmax` 라서 같은 입력에 항상 같은 출력이 나온다 (3-6).
+
+**`model.eval()` / `model.train()` 을 짝으로 감싼 것도 맞다.** 평가 중에 드롭아웃이 켜져 있으면 점수가 흔들린다.
+
+### 실측 결과
+
+| 항목 | 값 |
+| --- | --- |
+| 출발 모델 | `codebot/model_sft.pt` |
+| 반복 | 100회 |
+| 소요 시간 | **4분 55초** (2.96 s/it) |
+| 반복당 생성 | 32 × 8 = **256회** |
+| 최종 손실 | **0.2154** |
+| **최종 정확도** | **69.1%** (81문제 중 56개) |
+| 저장 | `codebot/model_grpo.pt` |
+
+**무작위로 맞힐 확률은 거의 0 이다.** 답이 2~18 사이의 수이고 모델은 자유 텍스트를 생성한다.
+SFT 모델 상태에서 몇 %였는지는 출력에 없지만, 1,092쌍짜리 SFT 데이터에 덧셈 문제가 있었을 가능성은 낮다.
+
+> **주의 — 이 69.1% 를 어떻게 읽을까**
+> **81문제를 외운 것일 수도 있다.** 학습과 평가가 **완전히 같은 81문제**다. 검증 집합이 없다.
+> 두 자리 수 덧셈(`12+34=`)이나 뺄셈으로 물어보면 **일반화됐는지** 알 수 있다.
+>
+> **시작점이 없다.** 학습 전 정확도를 찍지 않았다(`eval_interval` 평가가 `i=0`에서 돌지만 그때 이미 1회 갱신 뒤다).
+> "GRPO 가 몇 %p 올렸는가"를 말하려면 SFT 모델의 정확도를 먼저 재야 한다.
+>
+> **정확도 곡선은 그렸지만 숫자가 남지 않았다.** `accuracies` 리스트를 `plt.plot` 만 하고 출력하지 않았다.
+> `print(accuracies)` 한 줄이면 10회마다의 값이 기록된다.
+
+### 세 가지 정렬 기법을 나란히
+
+| | SFT (3-7) | DPO (4-8) | **GRPO (3-10)** |
+| --- | --- | --- | --- |
+| 데이터 | 지시-응답 쌍 | 선호 쌍 (chosen/rejected) | **문제 + 정답만** |
+| 응답을 누가 만드나 | 사람이 미리 | 사람이 미리 | **모델이 직접** |
+| 신호 | 정답을 베껴라 | 이쪽이 낫다 | **맞았다 / 틀렸다** |
+| 필요한 모델 | 1개 | 2개 (학습 + 기준) | **2개 (학습 + 직전 사본)** |
+| 기준선 | — | 기준 모델의 로그확률 | **그룹 평균 보상** |
+| 학습률 | `3e-4` | `5e-6` | **`7e-6`** |
+| 쓸 수 있는 과제 | 전부 | 선호를 매길 수 있는 것 | **정답을 판정할 수 있는 것** |
+| 비용 | 싸다 | 중간 | **비싸다 (생성 × group_size)** |
+
+**GRPO 가 수학·코딩에서 강한 이유가 표에 다 있다.** 정답 판정이 기계적이고, 응답을 사람이 안 만들어도 되고,
+"틀렸다"는 신호가 "덜 좋다"보다 훨씬 선명하다. 반대로 **번역·요약·글쓰기에는 쓰기 어렵다** — 정답이 하나가 아니다.
+
+### 이 절에서 고칠 것
+
+| 위치 | 내용 | 수정안 |
+| --- | --- | --- |
+| `GRPODataset` | 변수명 `ground_touch` — **`ground_truth`** 오타 | 이름 수정 |
+| 평가 | 학습·평가가 **같은 81문제**다. 검증 집합이 없다 | 두 자리 수나 뺄셈으로 일반화 확인 |
+| 평가 | **학습 전 정확도를 재지 않았다** | GRPO 전에 한 번 평가 |
+| 로그 | `accuracies` 를 그리고 출력하지 않는다 | `print(accuracies)` |
+| `calculate_reward` | `except:` 로 전부 삼킨다 | `except (ValueError, TypeError)` |
+| `generate_group` | `max_new_tokens` 를 안 넘겨 기본값(1000)을 쓴다 | 덧셈 답에는 10~20 이면 충분하다. **생성이 병목이라 효과가 크다** |
+| `grpo_loss` | 참조 모델(KL 벌점)이 없다 | 원 GRPO 는 `beta × KL(정책‖참조)` 를 더한다. 없으면 사전학습 실력을 잃을 수 있다 |
+| 전체 | 시드를 고정하지 않았다 | 강화학습은 분산이 커서 특히 필요하다 |
+
+---
+
 ## 이 장 정리
 
 ### 한 줄 요약
@@ -874,12 +1218,15 @@ model_sft.pt → 챗봇
 | 압축률 | 2.4229 바이트/토큰 | 파일 실측 |
 | SFT 샘플 | 1,092쌍 | 파일 실측 |
 | 파라미터 | 11,121,640 | 계산값 = **노트북 실측** |
-| 사전학습 최종 손실 | 0.6441 | 노트북 실측 |
-| 사전학습 시간 | 40분 15초 (20,000회) | 노트북 실측 |
+| 사전학습 최종 손실 | 0.6080 | 노트북 실측 (재실행) |
+| 사전학습 시간 | 40분 14초 (20,000회) | 노트북 실측 |
 | 압축률(앞 10,000자) | 2.1236 바이트/토큰 | 노트북 실측 |
 | 학습 전 기대 손실 | `ln(1000)` = 6.9078 | 이론값 |
 | `head_dim` | 384 / 6 = 64 | 설정 |
 | `ff_dim` | 4 × 384 = 1536 | 설정 |
+| GRPO 정확도 | 69.1% (81문제) | 노트북 실측 |
+| GRPO 그룹 크기 | 8 | 설정 |
+| GRPO 학습률 | `7e-6` (사전학습의 1/43) | 설정 |
 
 ### 외워 둘 코드
 
@@ -914,6 +1261,10 @@ labels = [-100]*len(prompt_ids) + response_ids   # SFT: 프롬프트 마스킹
 | 챗봇 | `while True`에 종료 조건이 없다 |
 | 셀 9 | f-string 중첩 따옴표 → **파이썬 3.12 이상 전용** |
 | 여러 셀 | `sys.path.append(".")`가 `import` 뒤에 있다 |
+| `GRPODataset` | `ground_touch` — `ground_truth` 오타 |
+| GRPO 평가 | 학습·평가가 같은 81문제다. 검증 집합이 없다 |
+| GRPO | 학습 전 정확도를 재지 않았다. 참조 모델(KL 벌점)도 없다 |
+| 전체 | 시드를 고정하지 않아 재실행마다 손실이 다르다 (0.6441 → 0.6080) |
 
 ### 자주 틀리는 것
 

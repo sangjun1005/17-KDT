@@ -95,3 +95,11 @@ Claude outputs/
 .venv-cuda/
 /17-vision_transformer/model/
 /17-vision_transformer/logs/
+
+# --- 17-RAG (2026-10-02) ---
+/17-RAG/.venv/
+# 산출물 폴더: 벡터DB·가중치·생성이미지. 노트북이 다시 만든다
+/17-RAG/work/
+# 맥에서 압축한 자료의 잔여물
+.DS_Store
+__MACOSX/

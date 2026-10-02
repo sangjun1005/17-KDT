@@ -1,0 +1,16 @@
+# 테스트 환경: Python 3.10, macOS (Apple M4 Max). 아래는 '최소 버전' 기준입니다.
+torch>=2.2
+torchvision
+transformers>=4.46
+datasets>=2.19
+diffusers>=0.30
+accelerate
+peft>=0.12
+chromadb>=0.5
+flask>=3.0
+requests
+pillow
+matplotlib
+scikit-learn
+jupyterlab
+ipykernel
