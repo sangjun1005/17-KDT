@@ -1,16 +1,21 @@
 # 5. Stable Diffusion — 글로 그림을 만든다
 
-**실습 파일**: `17-KDT/17-RAG/TotalAI.ipynb` (셀 33~36)
+**실습 파일**: `17-KDT/17-RAG/TotalAI.ipynb` (셀 33~40)
 
 4장까지는 **글을 읽고 글을 쓰는** 모델이었다. 5장은 **글을 읽고 그림을 그린다.**
 그리고 3장의 LLM 을 **프롬프트 번역기**로 다시 쓴다.
 
-> **2026-10-06 — 끝까지 돌았다**
+> **2026-10-07 — 셀 37~40 이 새로 들어왔다**
 > `stable-diffusion-v1-5` 를 `fp16` 으로 올리고, `DPMSolverMultistep` 으로 스케줄러를 교체,
 > 20스텝 512×512 이미지 생성. **LLM 이 한국어 요청을 영어 프롬프트로 바꿔** 3장을 뽑고,
 > **스텝(2·5·10·25)과 guidance(1·4·7.5·15)를 각각 4장씩** 비교했다.
 >
-> **다만 생성 시간·이미지 품질 평가 수치는 출력에 없다.** 그림만 남아 있다.
+> 거기에 **디노이징 중간 스냅샷 6장(5-7) · img2img 세기 3단계(5-8) ·
+> 인페인팅으로 배경 교체(5-9) · 포스터 생성과 저장(5-10)** 이 추가됐다.
+> 10-06 에 지적한 네 가지(프롬프트 미출력 · img2img/inpaint 미사용 ·
+> 이미지 미저장 · `pipe` 미해제)가 **전부 해결됐다** — 5-11 참조.
+>
+> **다만 생성 시간은 여전히 재지 않는다.** 7장 `/draw` 의 196초가 이 노트북의 유일한 숫자다.
 
 | 절 | 내용 |
 | --- | --- |
@@ -67,9 +72,8 @@ from diffusers import (StableDiffusionPipeline, StableDiffusionImg2ImgPipeline,
 | `StableDiffusionImg2ImgPipeline` | 글 + 그림 | 그림을 글 방향으로 **변형** |
 | `StableDiffusionInpaintPipeline` | 글 + 그림 + 마스크 | 마스크 부분만 **다시 그린다** |
 
-**셋을 다 import 했지만 실제로 쓴 것은 첫 번째뿐이다.**
-`assets/assets/puppymask.png` 가 폴더에 있는 것을 보면 **inpaint 실습이 예정돼 있었다** —
-아직 셀이 없다.
+**10-06 에는 첫 번째만 썼지만, 지금은 셋을 다 쓴다** — 5-8이 img2img, 5-9가 inpaint 다.
+`assets/assets/puppymask.png` 가 폴더에 있던 이유도 그것이었다.
 
 ---
 
@@ -219,7 +223,7 @@ test_img = draw('a cute robot studying with a laptop, flat illustration, pastel 
 
 **`pipeline=None` + `(pipeline or pipe)`** — img2img·inpaint 를 끼울 자리를 비워 뒀다.
 **`**kw`** 로 `image`·`mask_image`·`strength` 같은 파이프라인별 인자를 통과시킨다.
-**셋을 import 해 둔 것과 이어지는 설계다** — 아직 쓰이지 않았다.
+**셋을 import 해 둔 것과 이어지는 설계다** — 5-8·5-9 에서 실제로 쓰인다.
 
 **`.images[0]`** — 파이프라인은 항상 리스트를 준다 (`num_images_per_prompt` 로 여러 장 가능).
 
@@ -287,7 +291,7 @@ LLM 이 프롬프트를 따옴표로 감싸 주는 일이 흔하다 — 그러�
 > LLM 이 알아서 버리고 그릴 수 있는 요소만 남긴다 — 기계 번역으로는 안 되는 일이다.
 >
 > **다만 `en_prompt` 를 `print` 하지 않았다.** 어떤 프롬프트가 나왔는지 기록에 없다.
-> `make_prompt` 의 품질을 평가할 수 없다. **한 줄 추가가 필요하다** (5-7).
+> `make_prompt` 의 품질을 평가할 수 없다 — **5-10 `moa_poster` 에서 이것이 고쳐졌다.**
 >
 > 시스템 프롬프트의 `"You write prompts for Stable Diffusion, Convert"` 는 콤마로 두 문장을 이었다 —
 > 마침표가 맞지만 모델은 알아들었다.
@@ -355,7 +359,7 @@ show_images([draw(base_prompt, guidance=g, seed=1) for g in (1, 4, 7.5, 15)])
 > 그림 8장이 출력에 남아 있지만 **생성 시간·품질 점수가 없다.**
 > "스텝이 늘면 느리다"는 **이론이고, 이 PC 에서 몇 초인지는 측정되지 않았다.**
 > `time.time()` 으로 재면 "20스텝 512×512 가 몇 초"라는 쓸 수 있는 숫자가 남는다.
-> 2장 2-8이 `학습시간 15.17초`를 남긴 것과 대비된다.
+> 2장 2-8이 `학습 시간 14.4초`를 남긴 것과 대비된다.
 
 ---
 
@@ -565,8 +569,8 @@ poster.save(WORK / "images" / "poster_hackathon.png")
 
 ## 5-11. 고칠 것
 
-| 위치 | 내용 | 수정안 |
-| --- | --- | --- |
+### 해결된 것
+
 **10-06 에 적었던 것 중 네 개가 해결됐다.**
 
 | 지적했던 것 | 지금 |
@@ -660,6 +664,23 @@ chat([{'role':'system','content':'...comma-separated keywords, max 35 words. '
                                  'Output only the prompt.'},
       {'role':'user','content': korean}],
      temperature=0.4, max_tokens=100).strip().strip('"')
+
+# 중간 latent 를 꺼내 본다 — scaling_factor 를 되돌리고 callback_kwargs 를 돌려준다
+def capture(pipeline, i, t, callback_kwargs):
+    im = pipeline.vae.decode(callback_kwargs['latents'].to(pipeline.vae.dtype)
+                             / pipeline.vae.config.scaling_factor, return_dict=False)[0]
+    snapshots[i] = pipeline.image_processor.postprocess(im, output_type='pil')[0]
+    return callback_kwargs
+pipe(..., callback_on_step_end=capture, callback_on_step_end_tensor_inputs=['latents'])
+
+# 같은 모델이면 부품을 재사용한다 — VRAM 을 두 번 쓰지 않는다
+img2img = StableDiffusionImg2ImgPipeline(**pipe.components)
+img2img(prompt, image=img, strength=0.55, num_inference_steps=30)   # 실제 스텝 = 30 x 0.55
+
+# inpaint 는 UNet 입력 채널이 9개라 부품 재사용이 안 된다 — 따로 받고 바로 지운다
+inpaint = StableDiffusionInpaintPipeline.from_pretrained(SD_INPAINT_ID, ...)
+inpaint(prompt, image=orig, mask_image=mask, width=W, height=H)     # 흰색 = 다시 그릴 곳
+del inpaint; free_memory()
 ```
 
 ### 자주 틀리는 것
@@ -676,5 +697,9 @@ chat([{'role':'system','content':'...comma-separated keywords, max 35 words. '
 - guidance 를 1로 두면 빠르다고 쓴다 → **프롬프트가 안 먹는다**
 - 스텝을 50 이상 준다 → 10~20에서 포화한다. 시간만 쓴다
 - 비교 그림에 제목을 안 붙인다 → 어느 설정인지 알 수 없다
+- 중간 latent 를 `scaling_factor` 로 안 나누고 디코딩한다 → **색이 망가진다**
+- 콜백에서 `callback_kwargs` 를 안 돌려준다 → 다음 스텝이 깨진다
+- inpaint 를 `**pipe.components` 로 만들려 한다 → **채널 수가 달라 안 된다**
+- 인페인팅에서 원래 배경을 네거티브로 밀지 않는다 → 모델이 주변을 보고 **같은 배경을 이어 그린다**
 - 모델을 올려 두고 안 지운다 → VRAM 이 안 돌아온다. `del` + `free_memory()`
 - 생성 이미지를 저장하지 않는다 → 커널을 끄면 사라진다
