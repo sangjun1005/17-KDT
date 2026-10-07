@@ -150,14 +150,14 @@ def index():
 > 화면과 데이터 수집 함수가 각각 만들어졌을 뿐 **아직 이어지지 않은 상태**다.
 > 이어 붙이려면 `app.py`에서 `from scrapper import fetch_apt_trade`를 하고, 폼 값을 받아 `render_template("index.html", rows=fetch_apt_trade(...))`처럼 넘기면 된다.
 
-**주의 — 템플릿의 따옴표가 깨져 있다**
+**주의 — HTML 속성이 깨져도 브라우저는 에러를 내지 않는다**
 ```html
-<div class=""w-5xl h-full mx-auto>
-<div class="'w=full h-60 bg-red-300">
+<div class="w-5xl h-full mx-auto">
+<div class="w-full h-60 bg-red-300">
 ```
-첫 줄은 `class=""`로 닫힌 뒤 `w-5xl...`이 속성 이름으로 해석되고 `>`가 없어 태그가 이어진다.
-두 번째 줄은 `'`와 `=`가 섞였다. 브라우저가 알아서 복구하지만 스타일은 적용되지 않는다.
-`class="w-5xl h-full mx-auto"`, `class="w-full h-60 bg-red-300"`가 맞다.
+따옴표가 하나 더 붙거나 `>`가 빠지면 뒤의 값이 **속성 이름으로 해석되고 스타일이 적용되지 않는다.**
+브라우저가 알아서 복구해 화면이 나오므로 **"왜 스타일이 안 먹지"로만 드러난다.**
+파이썬과 달리 멈춰 주지 않으니 **에디터의 HTML 검사에 의존하는 편이 안전하다.**
 
 `main.py`는 `print("Hello from 17-apartment!")`만 있는 프로젝트 생성 시 기본 파일이다. 실행에는 쓰이지 않는다.
 

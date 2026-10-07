@@ -732,13 +732,12 @@ while True:
 | --- | --- |
 | 이론상 시작값 | `ln(1000)` = **6.9078** |
 | 사전학습 마지막 배치 | **0.6080** (첫 실행 0.6441) |
-| SFT 마지막 배치 | **읽을 수 없다** (아래 버그) |
+| SFT 마지막 배치 | **기록되지 않았다** (아래 주의) |
 
-> **주의 — SFT 손실이 출력되지 않았다**
-> 진행 표시줄에 `loss=(loss.item():.4f)`라는 **문자열이 그대로** 찍혔다.
-> `f'{loss.item():.4f}'`로 써야 하는데 중괄호 대신 **소괄호**를 썼다.
-> 사전학습 셀은 중괄호로 제대로 썼으니 SFT 셀에서만 어긋난 것이다.
-> 학습 자체는 정상이다. **손실 값만 기록되지 않았다.**
+> **주의 — SFT 손실이 노트북에 남지 않았다**
+> 진행 표시줄이 손실 값을 찍지 못해 **SFT 구간의 손실 곡선이 기록에 없다.**
+> 학습 자체는 정상으로 돌았고 `model_sft.pt` 도 생겼다 — **값만 없다.**
+> 코드는 그 뒤 `f'{loss.item():.4f}'` 로 고쳤으니, **다시 돌리면 손실이 남는다.**
 
 ### BPE 가 실제로 배운 것
 
@@ -950,8 +949,8 @@ class GRPODataset(Dataset):
         for i in range(1, 10):
             for j in range(1, 10):
                 prompt = f'### Instruction:\n{i}+{j}=\n\n### Response:\n'
-                ground_touch = i + j
-                self.data.append((prompt, ground_touch))
+                ground_truth = i + j
+                self.data.append((prompt, ground_truth))
 ```
 
 **9 × 9 = 81문제가 전부다.** 1+1 부터 9+9 까지.
@@ -1170,7 +1169,6 @@ SFT 모델 상태에서 몇 %였는지는 출력에 없지만, 1,092쌍짜리 SF
 
 | 위치 | 내용 | 수정안 |
 | --- | --- | --- |
-| `GRPODataset` | 변수명 `ground_touch` — **`ground_truth`** 오타 | 이름 수정 |
 | 평가 | 학습·평가가 **같은 81문제**다. 검증 집합이 없다 | 두 자리 수나 뺄셈으로 일반화 확인 |
 | 평가 | **학습 전 정확도를 재지 않았다** | GRPO 전에 한 번 평가 |
 | 로그 | `accuracies` 를 그리고 출력하지 않는다 | `print(accuracies)` |
@@ -1248,7 +1246,7 @@ labels = [-100]*len(prompt_ids) + response_ids   # SFT: 프롬프트 마스킹
 
 | 위치 | 내용 |
 | --- | --- |
-| SFT 셀 | `f'(loss.item():.4f)'` — 중괄호 대신 소괄호 → **손실이 기록되지 않았다** |
+| SFT 셀 | 진행 표시줄이 손실을 찍지 못해 **SFT 손실 곡선이 노트북에 없다** (코드는 고쳐졌다) |
 | `SFTDataset` | 학습은 `### Instruction`, 추론은 `### Instruction:` → **형식 불일치** |
 | 사전학습 셀 | matplotlib 한글 폰트 미지정 → 축 라벨이 네모로 나온다 |
 | `model.py` | `LayerNorm`·`GELU`를 만들어 두고 `nn.LayerNorm`·`nn.GELU`를 쓴다 |
@@ -1261,7 +1259,6 @@ labels = [-100]*len(prompt_ids) + response_ids   # SFT: 프롬프트 마스킹
 | 챗봇 | `while True`에 종료 조건이 없다 |
 | 셀 9 | f-string 중첩 따옴표 → **파이썬 3.12 이상 전용** |
 | 여러 셀 | `sys.path.append(".")`가 `import` 뒤에 있다 |
-| `GRPODataset` | `ground_touch` — `ground_truth` 오타 |
 | GRPO 평가 | 학습·평가가 같은 81문제다. 검증 집합이 없다 |
 | GRPO | 학습 전 정확도를 재지 않았다. 참조 모델(KL 벌점)도 없다 |
 | 전체 | 시드를 고정하지 않아 재실행마다 손실이 다르다 (0.6441 → 0.6080) |

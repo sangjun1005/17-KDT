@@ -145,20 +145,21 @@ LSTM: c_t = f_t ⊙ c_{t-1} + i_t ⊙ g_t      ← 망각 게이트가 1이면 �
 **망각 게이트 `f_t`가 1에 가까우면 정보가 손실 없이 지나간다.**
 ResNet의 잔차 연결과 같은 아이디어를 시간축에 쓴 것이다.
 
-### 주의 — 오타 하나로 안 도는 클래스
+### 주의 — 정의만 한 클래스는 검사되지 않는다
 
 ```python
 self.rnn = nn.RNN(input_size=input_size,
                   hidden_size=hidden_size,
                   num_layers=num_layers,
-                  bathc_first = True)        # ← batch_first 오타
+                  batch_first = True)
 ```
 
-`nn.RNN`은 모르는 키워드를 받으면 `TypeError`를 낸다.
-이 셀이 에러 없이 실행된 건 **클래스를 정의만 하고 한 번도 만들지 않았기 때문**이다.
+**`RNNModel` 은 이 노트북에서 한 번도 만들어지지 않는다.**
+`nn.RNN` 은 모르는 키워드를 받으면 `TypeError` 를 내지만,
+**클래스 몸통은 인스턴스를 만들 때 비로소 실행된다** — 정의만 한 셀은 에러 없이 지나간다.
 
-`RNNModel(...)`을 호출하는 순간 터진다. 이 노트북에서는 끝까지 안 쓰인다.
-(원본은 그대로 두었다. `batch_first=True`로 고치면 된다.)
+**`class` 를 정의한 셀이 통과했다고 그 안이 맞는 것은 아니다.**
+한 번은 만들어 봐야 검사된다.
 
 **클래스를 정의한 셀이 에러 없이 돌았다고 그 클래스가 맞는 건 아니다.**
 정의 시점에는 몸통이 실행되지 않는다. 최소한 한 번은 인스턴스를 만들어 봐야 한다.
@@ -697,15 +698,12 @@ time.sleep(0.1)                          # 학습하는 척
 **실제로 모델을 학습시키지 않는다.** `_train_and_evaluate`가 비어 있다.
 탐색 루프의 구조를 보여 주는 예제다. 두 셀 모두 출력이 없다(정의만 실행).
 
-여기에 오타와 논리 오류가 몇 개 있다. (원본은 그대로 두었다.)
+여기에 논리 오류가 둘 남아 있다.
 
 <table fit-page-width="true" header-row="true">
 <tr><td>위치</td><td>문제</td><td>결과</td></tr>
 <tr><td>grid_search</td><td><code>best_score = float('inf')</code>인데 <code>if score &gt; best_score</code></td><td>조건이 절대 참이 안 됨 → best_params가 None</td></tr>
 <tr><td>grid_search</td><td><code>raise NotImplemented</code></td><td>NotImplemented는 예외가 아님 → TypeError</td></tr>
-<tr><td>space</td><td><code>prior='log-unifrom'</code></td><td>오타 → skopt가 값을 거부</td></tr>
-<tr><td>optimize</td><td><code>best_params.item()</code></td><td><code>.items()</code>여야 함 → AttributeError</td></tr>
-<tr><td>hyperparameters</td><td><code>'sequence_lenght'</code></td><td>오타 (length)</td></tr>
 </table>
 
 **최소화/최대화 방향을 헷갈리는 건 탐색 코드에서 가장 흔한 버그다.**

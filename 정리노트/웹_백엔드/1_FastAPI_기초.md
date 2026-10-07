@@ -258,7 +258,7 @@ class Item(BaseModel):
     variant: Union[int, str]
 
 
-@app.post('items/')
+@app.post('/items/')
 def create_item(item: Item):
     return {
         'item':item
@@ -268,9 +268,9 @@ def create_item(item: Item):
 - `List[str]` — 문자열 배열
 - `Union[int, str]` — **정수든 문자열이든 받는다** (파이썬 3.10+에서는 `int | str`)
 
-> **주의 — 경로에 `/`가 빠졌다**
-> `@app.post('items/')`는 슬래시로 시작하지 않는다. 다른 데코레이터는 모두 `'/items/'` 형태다.
-> 이대로면 정상적인 URL로 이 엔드포인트에 도달할 수 없다. `'/items/'`가 맞다.
+> **경로는 반드시 `/`로 시작한다.**
+> 슬래시 없이 `'items/'`로 쓰면 정상적인 URL로 그 엔드포인트에 도달할 수 없다.
+> FastAPI가 에러를 내지 않으므로 **조용히 안 잡히는** 종류의 문제다.
 
 ---
 

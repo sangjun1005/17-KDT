@@ -34,7 +34,7 @@ class Item(BaseModel):
     variant: Union[int, str]
 
 
-@app.post('items/')
+@app.post('/items/')
 def create_item(item: Item):
     return {
         'item':item

@@ -1031,14 +1031,9 @@ initializer_weight(demo_model, 'kaiming')
 
 BatchNorm은 가중치 1, 편향 0으로 둔다. 처음에는 **아무것도 바꾸지 않는 상태**로 시작하는 것이다.
 
-참고: 함수 안에 오타가 있다
-
-```python
-nn.init.normal_(m.wiehgt, mean=0, std=0.01)     # wiehgt → weight
-```
-
-`init_type='normal'`로 부르고 `nn.Linear`를 만났을 때만 터진다.
-기본값이 `'kaiming'`이라 지금까지는 드러나지 않았다.
+참고: `init_type='normal'` 경로는 이 노트북에서 한 번도 쓰이지 않았다.
+기본값이 `'kaiming'`이라 `nn.Linear` 분기가 돌지 않는다 —
+**쓰이지 않는 분기는 에러가 있어도 끝까지 드러나지 않는다**는 점을 기억할 것.
 
 ---
 

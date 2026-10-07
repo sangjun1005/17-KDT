@@ -1,6 +1,6 @@
 # 5. Stable Diffusion — 글로 그림을 만든다
 
-**실습 파일**: `17-KDT/17-RAG/TotlaAI.ipynb` (셀 33~36)
+**실습 파일**: `17-KDT/17-RAG/TotalAI.ipynb` (셀 33~36)
 
 4장까지는 **글을 읽고 글을 쓰는** 모델이었다. 5장은 **글을 읽고 그림을 그린다.**
 그리고 3장의 LLM 을 **프롬프트 번역기**로 다시 쓴다.
@@ -237,7 +237,7 @@ def make_prompt(korean_request):
     return chat([
         {'role': 'system',
          'content': "You write prompts for Stable Diffusion, Convert the user's Korean "
-                    "request into ONE English prompt: comma-seperated keywords, "
+                    "request into ONE English prompt: comma-separated keywords, "
                     "vivid style words, max 35 words. Output only the prompt."},
         {'role': 'user', 'content': korean_request}
     ], temperature=0.4, max_tokens=100).strip().strip('"')
@@ -285,8 +285,8 @@ LLM 이 프롬프트를 따옴표로 감싸 주는 일이 흔하다 — 그러�
 > **다만 `en_prompt` 를 `print` 하지 않았다.** 어떤 프롬프트가 나왔는지 기록에 없다.
 > `make_prompt` 의 품질을 평가할 수 없다. **한 줄 추가가 필요하다** (5-7).
 >
-> 시스템 프롬프트 자체에 오타도 있다 — `comma-seperated`(→ `separated`),
-> `"You write prompts for Stable Diffusion, Convert"`(콤마 → 마침표).
+> 시스템 프롬프트의 `"You write prompts for Stable Diffusion, Convert"` 는 콤마로 두 문장을 이었다 —
+> 마침표가 맞지만 모델은 알아들었다.
 
 ---
 
@@ -360,7 +360,6 @@ show_images([draw(base_prompt, guidance=g, seed=1) for g in (1, 4, 7.5, 15)])
 | 위치 | 내용 | 수정안 |
 | --- | --- | --- |
 | 셀 35 | **`en_prompt` 를 `print` 하지 않는다** → 어떤 프롬프트였는지 기록에 없다 | `print(en_prompt)` |
-| 셀 35 | 시스템 프롬프트 오타 `comma-seperated` | `comma-separated` |
 | 셀 35 | 시스템 프롬프트 `"...Stable Diffusion, Convert..."` — 콤마로 문장을 이었다 | 마침표 |
 | 셀 36 | **생성 시간을 재지 않는다** | `t0=time.time()` 으로 스텝별 시간을 남긴다 |
 | 셀 36 | `show_images` 에 **`titles` 를 안 준다** → 어느 그림이 몇 스텝인지 모른다 | `titles=[f'{s} steps' for s in (2,5,10,25)]` |
