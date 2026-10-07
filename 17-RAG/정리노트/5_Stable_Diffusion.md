@@ -20,7 +20,11 @@
 | 5-4 | `draw` 함수 — 시드로 고정한다 |
 | 5-5 | LLM 을 프롬프트 번역기로 |
 | 5-6 | 스텝과 guidance — 노브 두 개 |
-| 5-7 | 고칠 것 |
+| 5-7 | 디노이징을 눈으로 — 스텝마다 꺼내 본다 |
+| 5-8 | img2img — 사진을 글 방향으로 변형한다 |
+| 5-9 | 인페인팅 — 마스크 부분만 다시 그린다 |
+| 5-10 | 세 조각을 하나로 — `moa_poster` |
+| 5-11 | 고칠 것 |
 
 ---
 
@@ -355,22 +359,234 @@ show_images([draw(base_prompt, guidance=g, seed=1) for g in (1, 4, 7.5, 15)])
 
 ---
 
-## 5-7. 고칠 것
+## 5-7. 디노이징을 눈으로 — 스텝마다 꺼내 본다
+
+```python
+STEPS, SHOW_AT = 20, (0, 2, 5, 9, 14, 19)
+snapshots = {}
+
+def capture_step(pipeline, step_index, timestep, callback_kwargs):
+    if step_index in SHOW_AT:
+        latents = callback_kwargs["latents"]
+        with torch.no_grad():
+            im = pipeline.vae.decode(latents.to(pipeline.vae.dtype) / pipeline.vae.config.scaling_factor,
+                                     return_dict=False)[0]
+        snapshots[step_index] = pipeline.image_processor.postprocess(im, output_type="pil")[0]
+    return callback_kwargs
+
+final = draw("a golden retriever puppy wearing a graduation cap, studio photo",
+             steps=STEPS, seed=21,
+             callback_on_step_end=capture_step,
+             callback_on_step_end_tensor_inputs=["latents"])
+```
+
+**5-1에서 글로 설명한 "노이즈를 조금씩 뺀다"를 그림으로 확인하는 셀이다.**
+
+### 핵심은 latent 가 아직 그림이 아니라는 것
+
+```plain text
+확산은 512×512 픽셀이 아니라 64×64 latent 공간에서 돈다
+   스텝 중간의 latents  (1, 4, 64, 64)   ← 사람이 볼 수 없다
+        |  vae.decode(latents / scaling_factor)
+        v
+   픽셀 이미지          (1, 3, 512, 512) ← 이제 볼 수 있다
+```
+
+| 코드 | 하는 일 |
+| --- | --- |
+| `callback_on_step_end=capture_step` | 스텝이 끝날 때마다 내 함수를 불러 준다 |
+| `callback_on_step_end_tensor_inputs=["latents"]` | 콜백에 `latents` 를 넘겨 달라고 **명시한다** |
+| `/ pipeline.vae.config.scaling_factor` | VAE 가 쓰는 배율을 되돌린다 (**빼먹으면 색이 망가진다**) |
+| `.to(pipeline.vae.dtype)` | latent 는 fp16, VAE 도 fp16 — 타입을 맞춘다 |
+| `image_processor.postprocess(..., output_type="pil")` | `[-1,1]` 텐서를 PIL 로 |
+| `return callback_kwargs` | **반드시 돌려줘야 한다.** 파이프라인이 이 값으로 다음 스텝을 돈다 |
+
+**`scaling_factor`(SD1.5 는 0.18215)는 VAE 학습 때 latent 분산을 1 근처로 맞추려고 곱해 둔 상수다.**
+`pipe(...)` 안에서는 자동으로 처리되지만, **중간을 직접 꺼내 보려면 손으로 되돌려야 한다.**
+
+### 실측 — 6장의 그림
+
+`SHOW_AT = (0, 2, 5, 9, 14, 19)` 로 스텝 1·3·6·10·15·20 을 뽑았다.
+
+| 스텝 | 보이는 것 |
+| --- | --- |
+| 1 / 20 | 색 덩어리. 형체가 없다 |
+| 3 / 20 | 중앙에 덩어리가 잡힌다 |
+| 6 / 20 | 강아지 윤곽과 모자 위치 |
+| 10 / 20 | 얼굴·귀가 생긴다 |
+| 15 / 20 | 털 질감, 거의 완성 |
+| 20 / 20 | 세부 정리 |
+
+**5-6의 "스텝 2·5·10·25 비교"와 다른 실험이다.**
+
+| | 5-6 | 5-7 |
+| --- | --- | --- |
+| 무엇을 바꾸나 | **스텝 수 자체** (2·5·10·25 회 생성) | 아무것도 — **한 번 생성하며 중간을 엿본다** |
+| 비용 | 생성 4번 | 생성 1번 + VAE 디코딩 6번 |
+| 보여 주는 것 | "몇 스텝이면 충분한가" | "안에서 무슨 일이 일어나는가" |
+
+**둘을 같이 보면 "왜 10~20에서 포화하는가"가 설명된다** —
+10스텝쯤에서 이미 형태가 서고, 뒤는 세부만 다듬는다.
+
+---
+
+## 5-8. img2img — 사진을 글 방향으로 변형한다
+
+```python
+img2img = StableDiffusionImg2ImgPipeline(**pipe.components)   # 이미 올려둔 부품 재사용
+img2img.set_progress_bar_config(disable=True)
+puppy = Image.open(ASSETS / "puppy.jpg").convert("RGB").resize((512, 344))
+
+watercolor = "a watercolor painting of a white puppy, soft pastel colors, children's book illustration"
+outs = [img2img(watercolor, negative_prompt=NEGATIVE, image=puppy,
+                strength=s, guidance_scale=7.5, num_inference_steps=30,
+                generator=torch.Generator("cpu").manual_seed(5)).images[0]
+        for s in (0.3, 0.55, 0.8)]
+```
+
+**`StableDiffusionImg2ImgPipeline(**pipe.components)` 가 이 셀에서 가장 실용적인 한 줄이다.**
+
+5-2에서 올린 `pipe` 의 부품(`vae`, `text_encoder`, `unet`, `scheduler`, `tokenizer`)을
+**그대로 넘겨 새 파이프라인을 만든다.** `from_pretrained` 를 다시 부르면
+**같은 4GB 를 VRAM 에 두 번 올린다** — 그 뒤 5-9에서 inpaint 를 쓸 때 메모리가 모자란다.
+
+### `strength` 가 유일한 새 노브다
+
+```plain text
+strength 는 "원본을 얼마나 지울까"다
+  입력 사진 -> latent 로 -> strength 만큼 노이즈를 섞는다 -> 거기서부터 디노이징
+  실제 스텝 수 = num_inference_steps x strength
+```
+
+| `strength` | 실제 스텝 (30 기준) | 결과 |
+| --- | --- | --- |
+| **0.3** | 9 | 원본 사진이 거의 그대로. 색조만 수채화처럼 |
+| **0.55** | 16 | **균형** — 형태는 유지, 질감은 그림 |
+| **0.8** | 24 | 원본이 거의 사라진다. 프롬프트가 지배 |
+
+**`strength=1.0` 은 text2img 와 같아진다** (원본을 완전히 노이즈로 덮으므로).
+**`strength=0` 은 아무것도 안 한다.**
+
+| 상황 | 값 |
+| --- | --- |
+| 사진의 화풍만 바꾼다 | 0.2~0.4 |
+| 구도는 두고 내용을 바꾼다 | 0.5~0.6 |
+| 참고용으로만 쓴다 | 0.7~0.9 |
+
+**`resize((512, 344))` 가 필요했던 이유** — SD1.5 는 512 학습 해상도이고,
+가로세로가 **8의 배수**여야 VAE 가 깔끔하게 압축한다 (64×43 latent).
+
+---
+
+## 5-9. 인페인팅 — 마스크 부분만 다시 그린다
+
+```python
+del img2img; free_memory()
+inpaint = StableDiffusionInpaintPipeline.from_pretrained(
+    SD_INPAINT_ID, torch_dtype=IMG_DTYPE, variant="fp16",
+    safety_checker=None, requires_safety_checker=False).to(DEVICE)
+
+orig = Image.open(ASSETS / "puppy.jpg").convert("RGB")
+mask = Image.open(ASSETS / "puppymask.png").convert("L")
+W, H = (orig.width // 8 * 8, orig.height // 8 * 8)     # 8의 배수로 맞춘다
+
+moon = inpaint("a white puppy on the surface of the moon, gray lunar craters and dust, "
+               "black starry sky with earth, photo",
+               negative_prompt="grass, wood, trees, " + NEGATIVE,
+               image=orig, mask_image=mask, width=W, height=H,
+               num_inference_steps=30, guidance_scale=9,
+               generator=torch.Generator("cpu").manual_seed(42)).images[0]
+del inpaint; free_memory()
+```
+
+**1장에서 "폴더에 `puppymask.png` 가 있는데 inpaint 셀이 없다"고 적었던 그 실습이 들어왔다.**
+
+### 모델이 다르다 — 이건 재사용이 안 된다
+
+| | 모델 | 부품 재사용 |
+| --- | --- | --- |
+| img2img (5-8) | `stable-diffusion-v1-5` | **된다** (`**pipe.components`) |
+| **inpaint** | **`stable-diffusion-inpainting`** | **안 된다** |
+
+**inpaint 전용 UNet 은 입력 채널이 9개다** (latent 4 + 마스크 1 + 마스크된 latent 4).
+일반 UNet 은 4채널이라 **구조가 달라서 부품을 바꿔 끼울 수 없다.**
+그래서 `from_pretrained` 로 따로 받고(약 2GB), **쓰고 나서 바로 ****`del`** 한다.
+
+### 마스크 규칙
+
+```plain text
+mask_image : 흰색(255) = 다시 그릴 곳 / 검은색(0) = 그대로 둘 곳
+.convert("L")  로 흑백 1채널로 만든다
+```
+
+**`negative_prompt` 에 ****`"grass, wood, trees"`**** 를 넣은 것이 요령이다.**
+원본 사진의 배경이 풀·나무였으므로, 모델이 **주변 맥락을 보고 같은 배경을 이어 그리려 한다.**
+"달 표면"을 원하면 **원래 배경을 명시적으로 밀어내야** 한다 — 5-3의 "반대로 밀기"가 여기서 쓰인다.
+
+**`guidance_scale=9`** 로 기본(7.5)보다 올렸다. 배경을 완전히 갈아야 하므로
+**프롬프트를 더 세게 따라야** 한다.
+
+| 노브 | 값 | 왜 |
+| --- | --- | --- |
+| `num_inference_steps` | 30 | 20보다 올렸다. 경계를 자연스럽게 이어야 한다 |
+| `guidance_scale` | **9** | 원래 배경을 이겨야 한다 |
+| 해상도 | `//8*8` | 원본 비율 유지 + VAE 요구 |
+
+---
+
+## 5-10. 세 조각을 하나로 — `moa_poster`
+
+```python
+def moa_poster(korean_request, seed=7):
+    prompt = make_prompt(korean_request)
+    print("모아가 쓴 프롬프트:", prompt)
+    return draw(prompt, seed=seed)
+
+poster = moa_poster("11월 해커톤을 알리는 포스터. 밤하늘 아래 노트북을 든 친구들, 미래적인 분위기")
+poster.save(WORK / "images" / "poster_hackathon.png")
+```
+
+```plain text
+모아가 쓴 프롬프트: Nighttime hackerathon poster, friends with laptops under a starry sky,
+                   futuristic vibe, vibrant colors, detailed, cinematic lighting.
+```
+
+**5-5에서 지적한 "`en_prompt` 를 ****`print`**** 하지 않는다"가 여기서 고쳐졌다.**
+이제 **LLM 이 무슨 프롬프트를 썼는지 기록에 남는다** — 그리고 바로 쓸모가 생겼다.
+
+> **모델이 `hackathon` 을 `hackerathon` 으로 썼다.**
+> 사람이 틀린 것이 아니라 **LLM 출력이다.** 틀린 단어를 CLIP 이 어떻게 토큰화하든
+> 그림은 나왔지만, **프롬프트를 찍어 두지 않았다면 이런 것을 영원히 모른다.**
+> 번역기를 중간에 끼울 때는 **그 출력을 로그로 남기는 것이 기본이다.**
+
+**`WORK/'images'` 에 처음으로 파일이 저장됐다** — 5-11에서 지적했던 "생성 이미지를 저장하지 않는다"가 해결됐다.
+
+---
+
+## 5-11. 고칠 것
 
 | 위치 | 내용 | 수정안 |
 | --- | --- | --- |
-| 셀 35 | **`en_prompt` 를 `print` 하지 않는다** → 어떤 프롬프트였는지 기록에 없다 | `print(en_prompt)` |
-| 셀 35 | 시스템 프롬프트 `"...Stable Diffusion, Convert..."` — 콤마로 문장을 이었다 | 마침표 |
-| 셀 36 | **생성 시간을 재지 않는다** | `t0=time.time()` 으로 스텝별 시간을 남긴다 |
-| 셀 36 | `show_images` 에 **`titles` 를 안 준다** → 어느 그림이 몇 스텝인지 모른다 | `titles=[f'{s} steps' for s in (2,5,10,25)]` |
-| 셀 33 | `torch_dtype` 는 deprecated (`FutureWarning`) | `dtype=IMG_DTYPE` |
-| 셀 33 | `StableDiffusionImg2ImgPipeline`·`InpaintPipeline` 을 **import 만 하고 안 쓴다** | 실습 셀을 추가하거나 import 를 줄인다 |
-| 셀 33 | `pipe` 를 **지우지 않는다** → VRAM 을 계속 차지한다 | 끝에 `del pipe; free_memory()` |
-| 셀 33 | 이미지를 **저장하지 않는다.** `WORK/'images'` 폴더가 비어 있다 | `img.save(WORK/'images'/f'{name}.png')` |
-| 셀 34 | 이미지 크기를 바꿀 수 있게 열어 뒀지만 **512 를 벗어나면 품질이 떨어진다** | 주석으로 명시 |
-| 셀 33 | `safety_checker=None` | 실습에서는 맞다. **배포 시 켠다**는 주석 |
-| 공통 | `assets/assets/puppymask.png` 가 있는데 **inpaint 셀이 없다** | 마스크 실습을 추가 |
-| 공통 | 마스코트 트리거 단어 (`05_자주묻는질문.txt`) 를 쓰는 셀이 없다 | LoRA·DreamBooth 실습이 다음 단계로 보인다 |
+**10-06 에 적었던 것 중 네 개가 해결됐다.**
+
+| 지적했던 것 | 지금 |
+| --- | --- |
+| `en_prompt` 를 `print` 하지 않는다 | **해결** — 5-10 `moa_poster` 가 찍는다 |
+| img2img·inpaint 를 import 만 하고 안 쓴다 | **해결** — 5-8 · 5-9 |
+| 생성 이미지를 저장하지 않는다 | **해결** — `work/images` 에 PNG 3장 |
+| `pipe` 를 지우지 않는다 | **해결** — 셀 48 `pipe = None; free_memory()` |
+
+### 아직 남은 것
+
+| 위치 | 내용 | 수정안 |
+| --- | --- | --- |
+| 셀 36·37 | **생성 시간을 재지 않는다** | `time.time()` 으로 스텝별 측정 |
+| 셀 36 | `show_images` 에 **`titles` 를 안 준다** (5-7·5-8·5-9 는 준다) | `titles=[f'{s} steps' for s in (2,5,10,25)]` |
+| 셀 33 | `torch_dtype` 는 deprecated (`FutureWarning` 이 실제로 찍혔다) | `dtype=IMG_DTYPE` |
+| 셀 33·39 | `safety_checker=None` | 실습에서는 맞다. **배포 시 켠다**는 주석 |
+| 셀 34 | 이미지 크기를 열어 뒀지만 **512 를 벗어나면 품질이 떨어진다** | 주석으로 명시 |
+| 셀 38 | `strength` 3개만 봤다. **실제 스텝 수를 찍지 않는다** | `print(int(30 * s))` 로 함께 |
+| 셀 39 | inpaint 모델을 받으며 **심볼릭 링크 경고**가 난다 (윈도우) | 개발자 모드 또는 `HF_HUB_DISABLE_SYMLINKS_WARNING` |
 
 ---
 
@@ -380,6 +596,7 @@ show_images([draw(base_prompt, guidance=g, seed=1) for g in (1, 4, 7.5, 15)])
 
 **확산 모델은 노이즈에서 그림을 깎아 내고, 그 노브는 스텝 수와 guidance 둘이다.**
 스케줄러를 바꿔 50스텝을 20스텝으로 줄였고, **3장의 LLM 을 한국어→영어 프롬프트 번역기로 재사용했다.**
+그 위에 **같은 모델로 세 가지 입력**(글만 / 글+사진 / 글+사진+마스크)을 다뤘다.
 
 ### 전체 흐름
 
@@ -412,8 +629,12 @@ PIL 이미지
 | 부정 프롬프트 | `low quality, blurry, deformed, ugly, text, watermark` |
 | 프롬프트 길이 제한 | **35단어** (CLIP 77토큰) |
 | 비교 실험 | 스텝 **2·5·10·25** / guidance **1·4·7.5·15** |
+| 디노이징 스냅샷 | 스텝 **1·3·6·10·15·20** (20스텝 중) |
+| img2img | `strength` **0.3 / 0.55 / 0.8** · 30스텝 · 512×344 |
+| 인페인팅 | `stable-diffusion-inpainting` · 30스텝 · guidance **9** |
+| 저장된 이미지 | `work/images/` 에 **3장** (poster_hackathon · poster_mascot · poster_from_server) |
 | 시드 | `Generator('cpu')`, 3장 비교는 3·4·5 |
-| 생성 시간 | **측정되지 않았다** |
+| 생성 시간 | **측정되지 않았다** (7장의 `/draw` 196초가 유일한 숫자다) |
 
 ### 외워 둘 코드
 
