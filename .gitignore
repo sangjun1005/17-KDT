@@ -109,3 +109,13 @@ __MACOSX/
 *.dwl2
 17-CAD/*.dwg
 17-CAD/*.dwt
+
+# --- 17-PM (2026-10-23) ---
+# 수업 화면·칠판 사진
+17-PM/*.jpg
+17-PM/*.png
+# 팀 문서 원본: 팀원 실명이 들어 있다 (정리노트만 올린다)
+17-PM/*.docx
+17-PM/*.hwpx
+# AutoCAD 오류 보고서·임시 도면
+17-CAD/ErrorReports/
