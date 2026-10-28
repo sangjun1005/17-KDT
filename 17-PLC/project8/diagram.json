@@ -1,0 +1,291 @@
+{
+  "version": 1,
+  "author": "Pico Alarm Clock",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-pi-pico",
+      "id": "pico",
+      "top": 50,
+      "left": 0,
+      "attrs": {
+        "env": "micropython-20260406-v1.28.0"
+      }
+    },
+    {
+      "type": "wokwi-7segment",
+      "id": "display",
+      "top": 10,
+      "left": 420,
+      "attrs": {
+        "common": "anode",
+        "digits": "4",
+        "colon": "1",
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "hours",
+      "top": 180,
+      "left": 340,
+      "attrs": {
+        "label": "Hours",
+        "color": "green",
+        "key": "h",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "minutes",
+      "top": 180,
+      "left": 440,
+      "attrs": {
+        "label": "Minutes",
+        "color": "green",
+        "key": "m",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "alarm",
+      "top": 180,
+      "left": 540,
+      "attrs": {
+        "label": "Alarm",
+        "color": "red",
+        "key": "a",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-ds1307",
+      "id": "rtc",
+      "top": 300,
+      "left": 340,
+      "attrs": {
+        "initTime": "2026-10-28T08:00:00Z"
+      }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 300,
+      "left": 560,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "ra",
+      "top": -180,
+      "left": 250,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rb",
+      "top": -155,
+      "left": 250,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rc",
+      "top": -130,
+      "left": 250,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rd",
+      "top": -105,
+      "left": 250,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "re",
+      "top": -80,
+      "left": 250,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rf",
+      "top": -55,
+      "left": 250,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rg",
+      "top": -30,
+      "left": 250,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rcolon",
+      "top": -5,
+      "left": 250,
+      "attrs": { "value": "330" }
+    }
+  ],
+  "connections": [
+    [
+      "pico:GP0",
+      "rtc:SDA",
+      "blue",
+      ["h-30", "v360"]
+    ],
+    [
+      "pico:GP1",
+      "rtc:SCL",
+      "yellow",
+      ["h-40", "v370"]
+    ],
+    [
+      "pico:VBUS",
+      "rtc:5V",
+      "red",
+      ["h60", "v370"]
+    ],
+    [
+      "pico:GND.8",
+      "rtc:GND",
+      "black",
+      ["h80", "v390"]
+    ],
+    [
+      "pico:GP2",
+      "display:DIG1",
+      "green",
+      ["h-50", "v-170"]
+    ],
+    [
+      "pico:GP3",
+      "display:DIG2",
+      "orange",
+      ["h-60", "v-180"]
+    ],
+    [
+      "pico:GP4",
+      "display:DIG3",
+      "purple",
+      ["h-70", "v-190"]
+    ],
+    [
+      "pico:GP5",
+      "display:DIG4",
+      "blue",
+      ["h-80", "v-200"]
+    ],
+    [
+      "pico:GP6",
+      "ra:1",
+      "green",
+      ["h-90", "v-300"]
+    ],
+    ["ra:2", "display:A", "green", ["h50"]],
+    [
+      "pico:GP7",
+      "rb:1",
+      "purple",
+      ["h-100", "v-290"]
+    ],
+    ["rb:2", "display:B", "purple", ["h65"]],
+    [
+      "pico:GP8",
+      "rc:1",
+      "blue",
+      ["h-110", "v-280"]
+    ],
+    ["rc:2", "display:C", "blue", ["h80"]],
+    [
+      "pico:GP9",
+      "rd:1",
+      "cyan",
+      ["h-120", "v-270"]
+    ],
+    ["rd:2", "display:D", "cyan", ["h95"]],
+    [
+      "pico:GP10",
+      "re:1",
+      "green",
+      ["h-130", "v-260"]
+    ],
+    ["re:2", "display:E", "green", ["h110"]],
+    [
+      "pico:GP11",
+      "rf:1",
+      "brown",
+      ["h-140", "v-250"]
+    ],
+    ["rf:2", "display:F", "brown", ["h125"]],
+    [
+      "pico:GP12",
+      "rg:1",
+      "orange",
+      ["h-150", "v-240"]
+    ],
+    ["rg:2", "display:G", "orange", ["h140"]],
+    [
+      "pico:GP13",
+      "rcolon:1",
+      "cyan",
+      ["h-160", "v-230"]
+    ],
+    ["rcolon:2", "display:CLN", "cyan", ["h155"]],
+    [
+      "pico:GP16",
+      "hours:1.l",
+      "green",
+      ["h70", "v-80"]
+    ],
+    [
+      "pico:GP17",
+      "minutes:1.l",
+      "gray",
+      ["h90", "v-60"]
+    ],
+    [
+      "pico:GP18",
+      "alarm:1.l",
+      "purple",
+      ["h110", "v-40"]
+    ],
+    [
+      "hours:2.l",
+      "pico:GND.5",
+      "black",
+      ["v70", "h-220"]
+    ],
+    [
+      "minutes:2.l",
+      "hours:2.l",
+      "black",
+      ["v70", "h-100"]
+    ],
+    [
+      "alarm:2.l",
+      "minutes:2.l",
+      "black",
+      ["v70", "h-100"]
+    ],
+    [
+      "pico:GP19",
+      "buzzer:1",
+      "orange",
+      ["h130", "v100"]
+    ],
+    [
+      "buzzer:2",
+      "pico:GND.5",
+      "black",
+      ["v90", "h-470"]
+    ]
+  ],
+  "dependencies": {}
+}
