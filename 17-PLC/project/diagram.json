@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-pi-pico",
+      "id": "pico",
+      "top": -41.55,
+      "left": 22.8,
+      "attrs": { "env": "micropython-20260406-v1.28.0" }
+    },
+    {
+      "type": "wokwi-7segment",
+      "id": "sevseg1",
+      "top": -33.42,
+      "left": -110.12,
+      "attrs": { "common": "anode", "digits": "1", "colon": "" }
+    }
+  ],
+  "connections": [
+    [ "sevseg1:B", "pico:GP1", "green", [ "v-27.96", "h57.6", "v38.4" ] ],
+    [ "sevseg1:A", "pico:GP0", "green", [ "v-37.56", "h76.8", "v-9.6" ] ],
+    [ "pico:GP2", "sevseg1:C", "green", [ "h-76.8", "v57.6", "h-28.8" ] ],
+    [ "pico:GP3", "sevseg1:D", "green", [ "h-67.2", "v57.6", "h-57.6" ] ],
+    [ "pico:GP4", "sevseg1:E", "green", [ "h-57.6", "v57.6", "h-76.8" ] ],
+    [
+      "pico:GP5",
+      "sevseg1:F",
+      "green",
+      [ "h-48", "v57.6", "h-105.6", "v-163.2", "h38.4", "h-9.6" ]
+    ],
+    [ "pico:3V3", "sevseg1:COM.1", "red", [ "v115.2", "h-181.2", "v-86.4" ] ],
+    [ "pico:GP6", "sevseg1:G", "green", [ "h-28.8", "v57.6", "h-134.4", "v-163.2", "h28.8" ] ],
+    [ "pico:GP7", "sevseg1:DP", "green", [ "h0" ] ]
+  ],
+  "dependencies": {}
+}
