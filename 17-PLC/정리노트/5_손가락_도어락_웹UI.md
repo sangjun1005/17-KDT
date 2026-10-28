@@ -143,7 +143,7 @@ try { save(next); } catch { return '브라우저에 저장하지 못했습니다
 | 항목 | 내용 |
 | --- | --- |
 | **비밀번호가 평문으로 로컬 저장소에** | 문서가 스스로 적어 뒀다. 교육용이므로 그대로 두되 **실제 용도로 쓰지 말 것** |
-| **`server-error.log`에 사용자명 경로** | `C:\Users\<사용자>\AppData\...` 가 MediaPipe 경고에 찍혀 있다. **저장소에서 제외했다** (`17-PLC/doorlock-ui/*.log`) |
+| **`server-error.log`에 사용자명 경로** | `C:\Users\(사용자명)\AppData\...` 가 MediaPipe 경고에 찍혀 있다. **저장소에서 제외했다** (`17-PLC/doorlock-ui/*.log`) |
 | **카메라 충돌** | 문서에 적힌 대로 `gesture_doorlock.py`나 화상회의가 켜져 있으면 카메라를 못 잡는다 |
 | **동작 화면이 없다** | 로그를 보면 MediaPipe가 **두 번 초기화**됐으므로 최소 2회 실행된 것은 맞다. 다만 화면 캡처가 없어 **실제 인식 성능은 알 수 없다** |
 | 의존 환경 | 문서 기준 Python 3.12 · OpenCV · MediaPipe 0.10.14. `requirements.txt`는 없다 |
