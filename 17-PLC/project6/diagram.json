@@ -1,0 +1,176 @@
+{
+  "version": 1,
+  "author": "Pico Door Lock",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-pi-pico",
+      "id": "pico",
+      "top": 60,
+      "left": 0,
+      "attrs": {
+        "env": "micropython-20260406-v1.28.0"
+      }
+    },
+    {
+      "type": "wokwi-membrane-keypad",
+      "id": "keypad1",
+      "top": 20,
+      "left": 260,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "door",
+      "top": 40,
+      "left": 600,
+      "attrs": {
+        "horn": "single",
+        "hornColor": "#8b5e3c"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "locked",
+      "top": 230,
+      "left": 620,
+      "attrs": {
+        "color": "red",
+        "label": "LOCKED"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "opened",
+      "top": 320,
+      "left": 620,
+      "attrs": {
+        "color": "green",
+        "label": "OPEN"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 250,
+      "left": 500,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 340,
+      "left": 500,
+      "attrs": {
+        "value": "330"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "pico:GP2",
+      "keypad1:R1",
+      "green",
+      ["h-30", "v-150", "h240"]
+    ],
+    [
+      "pico:GP3",
+      "keypad1:R2",
+      "blue",
+      ["h-40", "v-140", "h260"]
+    ],
+    [
+      "pico:GP4",
+      "keypad1:R3",
+      "orange",
+      ["h-50", "v-130", "h280"]
+    ],
+    [
+      "pico:GP5",
+      "keypad1:R4",
+      "purple",
+      ["h-60", "v-120", "h300"]
+    ],
+    [
+      "pico:GP6",
+      "keypad1:C1",
+      "green",
+      ["h-70", "v220", "h320"]
+    ],
+    [
+      "pico:GP7",
+      "keypad1:C2",
+      "blue",
+      ["h-80", "v220", "h340"]
+    ],
+    [
+      "pico:GP8",
+      "keypad1:C3",
+      "orange",
+      ["h-90", "v220", "h360"]
+    ],
+    [
+      "pico:GP9",
+      "keypad1:C4",
+      "purple",
+      ["h-100", "v220", "h380"]
+    ],
+    [
+      "pico:GP15",
+      "door:PWM",
+      "orange",
+      ["h-120", "v280", "h780"]
+    ],
+    [
+      "pico:VBUS",
+      "door:V+",
+      "red",
+      ["h60", "v-100", "h460"]
+    ],
+    [
+      "pico:GND.8",
+      "door:GND",
+      "black",
+      ["h80", "v-80", "h460"]
+    ],
+    [
+      "pico:GP16",
+      "r1:1",
+      "red",
+      ["h70", "v70"]
+    ],
+    [
+      "r1:2",
+      "locked:A",
+      "red",
+      ["h20"]
+    ],
+    [
+      "locked:C",
+      "pico:GND.5",
+      "black",
+      ["h50", "v160", "h-540"]
+    ],
+    [
+      "pico:GP17",
+      "r2:1",
+      "green",
+      ["h90", "v160"]
+    ],
+    [
+      "r2:2",
+      "opened:A",
+      "green",
+      ["h20"]
+    ],
+    [
+      "opened:C",
+      "pico:GND.5",
+      "black",
+      ["h70", "v90", "h-560"]
+    ]
+  ],
+  "dependencies": {}
+}

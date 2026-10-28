@@ -1,0 +1,345 @@
+{
+  "version": 1,
+  "author": "Pico Volume Light Sensor",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-pi-pico",
+      "id": "pico",
+      "top": 50,
+      "left": 0,
+      "attrs": {
+        "env": "micropython-20260406-v1.28.0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "sw1",
+      "top": 340,
+      "left": 220,
+      "attrs": {
+        "color": "blue",
+        "label": "SW1 VOLUME",
+        "key": "1",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "sw2",
+      "top": 340,
+      "left": 330,
+      "attrs": {
+        "color": "green",
+        "label": "SW2 LIGHT",
+        "key": "2",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "sw3",
+      "top": 340,
+      "left": 440,
+      "attrs": {
+        "color": "red",
+        "label": "SW3 OFF",
+        "key": "3",
+        "bounce": "0"
+      }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": 210,
+      "left": 220,
+      "attrs": {
+        "value": "0"
+      }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 180,
+      "left": 540,
+      "attrs": {
+        "lux": "500"
+      }
+    },
+    {
+      "type": "wokwi-7segment",
+      "id": "fnd",
+      "top": 80,
+      "left": 450,
+      "attrs": {
+        "common": "cathode",
+        "digits": "1",
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 290,
+      "left": 580,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "ra",
+      "top": -140,
+      "left": 270,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rb",
+      "top": -110,
+      "left": 270,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rc",
+      "top": -80,
+      "left": 270,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rd",
+      "top": -50,
+      "left": 270,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "re",
+      "top": -20,
+      "left": 270,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rf",
+      "top": 10,
+      "left": 270,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rg",
+      "top": 40,
+      "left": 270,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "rled",
+      "top": 295,
+      "left": 460,
+      "attrs": {
+        "value": "330"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "pico:GP2",
+      "ra:1",
+      "green",
+      ["h-50", "v-230"]
+    ],
+    [
+      "ra:2",
+      "fnd:A",
+      "green",
+      ["h40", "v20"]
+    ],
+    [
+      "pico:GP3",
+      "rb:1",
+      "blue",
+      ["h-60", "v-220"]
+    ],
+    [
+      "rb:2",
+      "fnd:B",
+      "blue",
+      ["h55", "v20"]
+    ],
+    [
+      "pico:GP4",
+      "rc:1",
+      "orange",
+      ["h-70", "v-210"]
+    ],
+    [
+      "rc:2",
+      "fnd:C",
+      "orange",
+      ["h70", "v20"]
+    ],
+    [
+      "pico:GP5",
+      "rd:1",
+      "yellow",
+      ["h-80", "v-200"]
+    ],
+    [
+      "rd:2",
+      "fnd:D",
+      "yellow",
+      ["h85", "v20"]
+    ],
+    [
+      "pico:GP6",
+      "re:1",
+      "purple",
+      ["h-90", "v-190"]
+    ],
+    [
+      "re:2",
+      "fnd:E",
+      "purple",
+      ["h100", "v20"]
+    ],
+    [
+      "pico:GP7",
+      "rf:1",
+      "cyan",
+      ["h-100", "v-180"]
+    ],
+    [
+      "rf:2",
+      "fnd:F",
+      "cyan",
+      ["h115", "v20"]
+    ],
+    [
+      "pico:GP8",
+      "rg:1",
+      "brown",
+      ["h-110", "v-170"]
+    ],
+    [
+      "rg:2",
+      "fnd:G",
+      "brown",
+      ["h130", "v20"]
+    ],
+    [
+      "fnd:COM.1",
+      "pico:GND.1",
+      "black",
+      ["v40", "h-120"]
+    ],
+    [
+      "pico:GP10",
+      "sw1:1.l",
+      "blue",
+      ["h-30", "v150"]
+    ],
+    [
+      "pico:GP11",
+      "sw2:1.l",
+      "green",
+      ["h-40", "v160"]
+    ],
+    [
+      "pico:GP12",
+      "sw3:1.l",
+      "purple",
+      ["h-50", "v170"]
+    ],
+    [
+      "sw1:2.l",
+      "pico:GND.4",
+      "black",
+      ["v60", "h-170"]
+    ],
+    [
+      "sw2:2.l",
+      "sw1:2.l",
+      "black",
+      ["v50", "h-110"]
+    ],
+    [
+      "sw3:2.l",
+      "sw2:2.l",
+      "black",
+      ["v50", "h-110"]
+    ],
+    [
+      "pot1:VCC",
+      "pico:3V3",
+      "red",
+      ["v30", "h-80"]
+    ],
+    [
+      "pot1:GND",
+      "pico:GND.8",
+      "black",
+      ["v45", "h-100"]
+    ],
+    [
+      "pot1:SIG",
+      "pico:GP26",
+      "orange",
+      ["v60", "h-120"]
+    ],
+    [
+      "ldr1:VCC",
+      "pico:3V3",
+      "red",
+      ["h70", "v-180"]
+    ],
+    [
+      "ldr1:GND",
+      "pico:GND.8",
+      "black",
+      ["h80", "v180"]
+    ],
+    [
+      "ldr1:AO",
+      "pico:GP27",
+      "pink",
+      ["h90", "v160"]
+    ],
+    [
+      "pico:GP13",
+      "rled:1",
+      "green",
+      ["h-60", "v140"]
+    ],
+    [
+      "rled:2",
+      "led1:A",
+      "red",
+      ["h20"]
+    ],
+    [
+      "led1:C",
+      "pico:GND.4",
+      "black",
+      ["v140", "h-520"]
+    ]
+  ],
+  "dependencies": {}
+}

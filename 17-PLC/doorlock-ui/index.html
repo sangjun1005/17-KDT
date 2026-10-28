@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="손동작으로 여는 우리 집. 카메라 손가락 인식 도어락 시연 화면.">
+  <title>문 앞에서, 안심 — Gesture Home</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .pin-actions{display:flex;gap:7px;margin:-8px 0 19px}
+    .pin-actions button{flex:1;border:1px solid #c7d3bc;border-radius:5px;background:#f1f5e9;color:#4c6645;padding:8px 4px;font-size:10px}
+    .pin-actions button:hover:not(:disabled){background:#e1ebd4}
+    .pin-actions button:disabled{opacity:.4}
+    .password-settings{position:absolute;right:18px;top:20px;border:0;background:transparent;color:#607951;font-size:9px;padding:4px 0;text-decoration:underline;text-underline-offset:3px}
+    .password-settings:disabled{opacity:.4}
+    .password-dialog{width:min(420px,calc(100% - 32px));border:1px solid #ccd7c1;border-radius:15px;padding:28px;color:#273d3a;background:#f8faf3;box-shadow:0 25px 90px #243b3050}
+    .password-dialog::backdrop{background:#21362980;backdrop-filter:blur(4px)}
+    .password-dialog h2{font-size:21px;margin:0 0 12px}
+    .password-dialog p{font-size:11px;line-height:1.8;color:#75816c}
+    .password-dialog label{display:block;font-size:11px;margin:16px 0 7px;color:#4c6645}
+    .password-dialog input{width:100%;border:1px solid #c6d2bc;border-radius:6px;background:white;color:#273d3a;padding:11px 12px;font:18px monospace;letter-spacing:5px}
+    .password-dialog input:focus{outline:2px solid #7b9968;outline-offset:2px}
+    .password-dialog .password-error{min-height:20px;color:#ad5b42;letter-spacing:0}
+    .password-dialog .dialog-actions{display:flex;gap:10px;margin-top:10px}
+    .password-dialog .dialog-actions button{flex:1;border:1px solid #b5c4a6;border-radius:6px;background:#edf1e4;color:#4c6645;padding:11px}
+    .password-dialog .dialog-actions button[type=submit]{background:#3b5d47;color:white;border-color:#3b5d47}
+    @media(max-width:780px){
+      .pin-actions{grid-column:2;grid-row:3;margin:8px 0 0;gap:5px}
+      .pin-actions button{font-size:9px;padding:6px 3px}
+      .access-card>p:not(.eyebrow){grid-row:3/7}
+      .access-card .timer-info{grid-row:4}
+      .access-card .countdown-track{grid-row:5}
+      .access-card .close-button{grid-row:6}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="./" class="brand"><span class="brand-mark">⌂</span><span>온전히<span class="brand-en">GESTURE HOME</span></span></a>
+    <div class="top-center"><span class="tiny-dot"></span> 우리 집의 새로운 인사</div>
+    <div class="local-badge"><span class="tiny-dot"></span> LOCAL · 화면 시연</div>
+  </header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">A LITTLE GESTURE. A WARM WELCOME.</p><h1>문 앞에서, <em>안심.</em></h1><p class="intro-copy">열쇠 대신 손짓으로. 익숙한 공간이 당신을 반깁니다.</p></div><div class="intro-meta"><span>MY APARTMENT</span><strong>101 <i>/</i> 1204</strong><span>스마트 제스처 현관</span></div></section>
+    <section class="experience" aria-label="아파트 현관 도어락 시연">
+      <div class="scene" id="scene">
+        <div class="wall-lines"></div><div class="ceiling-light"></div><div class="floor"></div><div class="side-door left-side"></div><div class="side-door right-side"></div>
+        <div class="room-address"><span>12F</span><div></div><small>당신의 하루가<br>편안해지는 곳</small></div>
+        <div class="portal">
+          <div class="inside" aria-label="문이 열리면 보이는 따뜻한 현관 내부">
+            <svg viewBox="0 0 320 540" preserveAspectRatio="none" aria-hidden="true">
+              <defs><linearGradient id="room" x2="0" y2="1"><stop stop-color="#e8d7bb"/><stop offset="1" stop-color="#f8ead5"/></linearGradient><linearGradient id="wood" x2="1" y2="0"><stop stop-color="#b68b5e"/><stop offset=".5" stop-color="#cca77c"/><stop offset="1" stop-color="#a27a53"/></linearGradient><radialGradient id="glow"><stop stop-color="#fff5cf" stop-opacity=".85"/><stop offset="1" stop-color="#fff5cf" stop-opacity="0"/></radialGradient></defs>
+              <path fill="url(#room)" d="M0 0H320V540H0z"/><path fill="#d2bea0" d="M0 0L61 90V365L0 540Z"/><path fill="#ecdcc4" d="M320 0L259 90V365L320 540Z"/><path fill="#b99169" d="M0 540L61 365H259L320 540Z"/>
+              <path d="M0 0L61 90H259L320 0" fill="#f3e9d8"/><ellipse cx="160" cy="128" rx="146" ry="137" fill="url(#glow)"/>
+              <path d="M160 45V82" stroke="#7b6a51" stroke-width="2"/><path d="M136 82Q160 60 184 82L192 96H128Z" fill="#f8ecd0"/><ellipse cx="160" cy="96" rx="32" ry="5" fill="#fff5cc"/>
+              <path d="M78 160H136V368H78Z" fill="#c6b195"/><path d="M82 164H132V368H82Z" fill="#eee0ca"/><circle cx="124" cy="277" r="2" fill="#80684f"/>
+              <rect x="181" y="182" width="49" height="69" rx="1" fill="#f5ebd8" stroke="#b6946f" stroke-width="3"/><path d="M192 229Q204 193 218 218L226 239H188Z" fill="#b7c0a1"/>
+              <rect x="165" y="300" width="80" height="66" fill="url(#wood)"/><path d="M164 300H246V308H164Z" fill="#f4e6cf"/><path d="M205 308V366" stroke="#a57e56"/><circle cx="199" cy="322" r="2" fill="#806549"/><circle cx="211" cy="322" r="2" fill="#806549"/>
+              <ellipse cx="158" cy="410" rx="58" ry="16" fill="#6e624c" opacity=".15"/><path d="M94 393L205 393L221 430H77Z" fill="#d8c6a8"/><path d="M98 402H203M95 410H208M92 418H211" stroke="#bba887" stroke-width="1"/>
+              <path d="M56 350H83L79 385H61Z" fill="#cfb694"/><path d="M70 350V292M70 324Q43 300 52 283Q74 289 70 324M70 314Q94 290 91 275Q71 278 70 314M70 345Q90 320 94 327Q96 343 70 345" fill="#728467" stroke="#687c5b" stroke-width="2"/>
+              <path d="M61 365H259M49 400H271M35 439H285M17 487H303M113 365L94 540M163 365L164 540M212 365L237 540" stroke="#8e6f50" opacity=".2"/>
+              <path d="M114 450Q115 438 130 438H142V454H114M153 450Q154 438 169 438H181V454H153" fill="#7e877b"/>
+            </svg>
+          </div>
+          <div class="door" id="door">
+            <div class="door-grain"></div><div class="door-top-line"></div><div class="door-bottom-line"></div><div class="peephole"></div><div class="door-number">1204<span>HOME SWEET HOME</span></div>
+            <div class="digital-lock"><div class="lock-led" id="lockLed"></div><span class="lock-brand">ONJEON</span><div class="lock-screen" id="lockScreen">LOCKED</div><div class="keypad" aria-hidden="true"><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b><b>7</b><b>8</b><b>9</b><b>*</b><b>0</b><b>#</b></div><div class="lock-handle"></div><div class="lock-reader">◉</div></div>
+            <div class="hinge hinge-top"></div><div class="hinge hinge-bottom"></div>
+          </div>
+          <div class="threshold"></div>
+        </div>
+        <div class="wall-switch"><span></span><span></span></div><div class="mat">welcome home</div>
+      </div>
+      <aside class="camera-card">
+        <div class="card-heading"><span><i class="tiny-dot" id="cameraDot"></i> 현관 카메라</span><small id="cameraTag">STANDBY</small></div>
+        <div class="camera-view"><img id="cameraFrame" alt="손가락 인식 카메라 영상" hidden><div class="camera-empty" id="cameraEmpty"><svg width="47" height="47" viewBox="0 0 48 48" fill="none" aria-hidden="true"><rect x="7" y="13" width="27" height="23" rx="6" stroke="currentColor" stroke-width="1.5"/><path d="M34 20L42 16V33L34 29M17 13L20 8H27L30 13" stroke="currentColor" stroke-width="1.5"/><circle cx="21" cy="24" r="6" stroke="currentColor" stroke-width="1.5"/></svg><strong>작은 손짓을 기다립니다</strong><span>카메라를 켜고 손을 보여 주세요.</span></div><div class="camera-corners"></div><span class="camera-overlay" id="cameraOverlay" hidden>인식 중</span></div>
+        <div class="recognition"><span>인식된 손가락 <strong id="fingerCount">—</strong></span><span id="holdLabel">1초 유지하여 입력</span></div><div class="hold-track"><div id="holdProgress"></div></div>
+        <button class="camera-button" id="cameraButton">카메라 켜기 <span>↗</span></button><p class="camera-note" id="cameraNote">영상은 이 PC에서만 처리됩니다.</p>
+      </aside>
+      <aside class="access-card"><p class="eyebrow">HOME ACCESS</p><button class="password-settings" id="passwordButton" type="button">비밀번호 변경</button><div class="status-icon" id="statusIcon">⌑</div><h2 id="statusTitle" aria-live="polite">안전하게 잠겨 있어요</h2><p id="statusDescription">등록된 손동작으로<br>우리 집의 문을 열어 주세요.</p><div class="pin-slots" id="pinSlots" aria-label="입력한 비밀번호 0자리"><span></span><span></span><span></span><span></span></div><div class="pin-actions" role="group" aria-label="비밀번호 입력 수정"><button id="backspaceButton" type="button" disabled>⌫ 한 자리 지우기</button><button id="clearButton" type="button" disabled>전체 지우기</button></div><div class="access-divider"></div><div class="timer-info"><span>자동 닫힘</span><strong id="timerLabel">5초</strong></div><div class="countdown-track"><div id="countdownProgress"></div></div><button id="closeButton" class="close-button" disabled>문 닫고 잠그기 <span>↘</span></button></aside>
+      <div class="scene-caption"><span class="tiny-dot" id="doorStateDot"></span><span id="doorCaption">현관문 잠김</span><span class="caption-separator">/</span><span>101동 1204호</span></div><div class="scene-signature">A SPACE TO COME HOME TO.</div>
+    </section>
+    <section class="bottom-panel"><div class="howto"><span class="section-number">01 — HOW IT WORKS</span><p>손을 보여 주고 <b>1초 유지</b> → 손을 <b>0.5초 빼기</b> → 다음 숫자</p><small><b>0~5 숫자로 된 네 자리</b> · 문이 열린 뒤 5초 후 자동으로 닫힙니다.</small></div><div class="demo-controls"><div><span class="section-number">CAMERA-FREE PREVIEW</span><small>카메라 없이 모션을 확인해 보세요.</small></div><button id="demoButton">열림 모션 시연 <span>↗</span></button></div></section>
+    <section class="activity"><div><span class="section-number">RECENT ACTIVITY</span><span class="activity-session">현재 세션의 기록만 표시합니다.</span></div><ol id="activityLog" aria-live="polite"><li><span class="event-dot"></span><span>현관 시스템이 준비되었습니다.</span><time>지금</time></li></ol></section>
+  </main>
+  <footer><span>ONJEON · GESTURE HOME</span><span>손가락 개수 인식 기반 UI 시연 · 실제 보안 인증 / 장치 제어 아님</span><span>MADE FOR YOUR EVERYDAY.</span></footer>
+  <dialog id="passwordDialog" class="password-dialog" aria-labelledby="passwordTitle" aria-describedby="passwordHelp">
+    <form id="passwordForm">
+      <p class="eyebrow">ACCESS SETTINGS</p>
+      <h2 id="passwordTitle">비밀번호 변경</h2>
+      <p id="passwordHelp">손가락으로 입력할 수 있는 0~5 숫자 네 자리로 설정해 주세요. 변경 중에는 손동작 입력을 받지 않습니다.</p>
+      <label for="currentPassword">현재 비밀번호</label>
+      <input id="currentPassword" type="password" inputmode="numeric" autocomplete="off" pattern="[0-5]{4}" minlength="4" maxlength="4" required autofocus>
+      <label for="newPassword">새 비밀번호</label>
+      <input id="newPassword" type="password" inputmode="numeric" autocomplete="off" pattern="[0-5]{4}" minlength="4" maxlength="4" required>
+      <label for="confirmPassword">새 비밀번호 확인</label>
+      <input id="confirmPassword" type="password" inputmode="numeric" autocomplete="off" pattern="[0-5]{4}" minlength="4" maxlength="4" required>
+      <p id="passwordError" class="password-error" role="alert"></p>
+      <p>이 브라우저에만 저장되는 시연용 번호입니다. 다른 서비스에서 쓰는 비밀번호는 사용하지 마세요.</p>
+      <div class="dialog-actions"><button id="passwordCancel" type="button">취소</button><button type="submit">변경 저장</button></div>
+    </form>
+  </dialog>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

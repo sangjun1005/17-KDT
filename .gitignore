@@ -148,3 +148,7 @@ __MACOSX/
 
 # Windows 바로가기
 *.lnk
+
+# --- 17-PLC doorlock-ui (2026-10-28) ---
+# 서버 로그: MediaPipe 경고에 윈도우 사용자명 경로가 찍힌다
+17-PLC/doorlock-ui/*.log

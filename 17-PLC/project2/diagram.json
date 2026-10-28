@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "author": "권상준",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-pi-pico",
+      "id": "pico",
+      "top": 0,
+      "left": 0,
+      "attrs": {
+        "env": "micropython-20260406-v1.28.0"
+      }
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic1",
+      "top": 20.7,
+      "left": -224.9,
+      "attrs": {
+        "distance": "50"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -42,
+      "left": -53.8,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 19.2,
+      "left": -67.2,
+      "rotate": 90,
+      "attrs": {
+        "value": "330"
+      }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot1",
+      "top": 64,
+      "left": 150,
+      "rotate": 270,
+      "attrs": {
+        "travelLength": "30",
+        "value": "512"
+      }
+    },
+    {
+      "type": "wokwi-ntc-temperature-sensor",
+      "id": "ntc1",
+      "top": -90,
+      "left": 150,
+      "attrs": {
+        "temperature": "24",
+        "beta": "3950"
+      }
+    }
+  ],
+  "connections": [
+    ["pico:GP14", "ultrasonic1:ECHO", "green", []],
+    ["pico:GP15", "ultrasonic1:TRIG", "green", []],
+    ["ultrasonic1:VCC", "pico:VBUS", "red", []],
+    ["ultrasonic1:GND", "pico:GND.3", "black", []],
+
+    ["pico:3V3", "pot1:VCC", "red", []],
+    ["pot1:SIG", "pico:GP28", "green", []],
+    ["pot1:GND", "pico:GND.8", "black", []],
+
+    ["pico:3V3", "ntc1:VCC", "red", []],
+    ["ntc1:OUT", "pico:GP27", "green", []],
+    ["ntc1:GND", "pico:GND.8", "black", []],
+
+    ["pico:GP3", "r1:1", "green", []],
+    ["r1:2", "led1:A", "green", []],
+    ["led1:C", "pico:GND.2", "black", []]
+  ],
+  "dependencies": {}
+}
