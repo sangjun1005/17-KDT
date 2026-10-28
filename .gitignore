@@ -119,3 +119,32 @@ __MACOSX/
 17-PM/*.hwpx
 # AutoCAD 오류 보고서·임시 도면
 17-CAD/ErrorReports/
+
+# --- 17-PLC (2026-10-27) ---
+# DIYLC 회로 작도 프로그램 본체 (서드파티 앱, 저장소에 넣지 않는다)
+17-PLC/diylc.exe
+17-PLC/diylc.jar
+17-PLC/diylc.l4j.ini
+17-PLC/run.sh
+17-PLC/associations.bat
+17-PLC/update.xml
+17-PLC/config.xml
+17-PLC/lib/
+17-PLC/library/
+17-PLC/themes/
+17-PLC/templates/
+17-PLC/log/
+# 강사 교재 (저작권)
+17-PLC/*.pdf
+# 자동 저장·백업·임시 파일
+17-PLC/autoSave.diy
+17-PLC/**/*_bkx*
+17-PLC/**/~tmp*/
+
+# --- 포트폴리오 (2026-10-27) ---
+# 본인 실명이 들어간 지원용 문서. 저장소가 Public 이라 올리지 않는다.
+17-PM/포트폴리오/
+17-PM/portfolio_1p.html
+
+# Windows 바로가기
+*.lnk
